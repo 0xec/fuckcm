@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, mainActivity!</string>
-    <string name="app_name">fuckCM</string>
+    <string name="TEXT_CONTENT">这个不存在基础服务之说，我决定把功能整合在一起，一键启动HTTP,HTTPS,SOCKET,DNS服务</string>
+    <string name="TEXT_TITLE">启动服务</string>
+    <string name="BTN_STOPING">停止</string>
+    <string name="BTN_RUNING">运行中</string>
+    <string name="app_name">fuckCM v1.0 beta</string>
 </resources>

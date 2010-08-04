@@ -12,7 +12,8 @@
             </intent-filter>
         </activity>
 
-    </application>
+    <service android:name=".services.fuckcmServices"></service>
+</application>
     <uses-sdk android:minSdkVersion="5" />
 
 </manifest> 
