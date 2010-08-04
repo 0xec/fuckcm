@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="TEXT_CONTENT">click this button to start http, https, socket, dns services</string>
+	<string name="TEXT_TITLE">Start Service</string>
+    <string name="BTN_STOPING">Stopped</string>
+    <string name="BTN_RUNING">Runing</string>
+    <string name="app_name">fuckCM v1.0 beta</string>
+</resources>
