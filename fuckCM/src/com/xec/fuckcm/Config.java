@@ -37,7 +37,7 @@ public class Config {
 		return sharePerference.getString(name, defaultValue);
 	}
 
-	public int getString(String name, int defaultValue) {
+	public int getInt(String name, int defaultValue) {
 
 		SharedPreferences sharePerference = PreferenceManager
 				.getDefaultSharedPreferences(ctxContext);
