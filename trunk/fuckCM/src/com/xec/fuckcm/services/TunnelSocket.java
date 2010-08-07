@@ -18,45 +18,58 @@ public class TunnelSocket extends Thread {
 
 	// 隧道监听套接字
 	public ServerSocket srvTunnelSocket;
-	
-	//	保存连接状态，以备下次查找
+	public Boolean	isRuning = false;
+
+	// 保存连接状态，以备下次查找
 	private static Hashtable<String, String> connReq = new Hashtable<String, String>();
 
-	//	线程池
+	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
-	
+
 	public TunnelSocket(ServerSocket srvSkt) {
 
 		this.srvTunnelSocket = srvSkt;
+		isRuning = true;
 	}
 
 	@Override
 	public void run() {
-		
+
 		String dstHost;
 		int srcPort;
 
-		while (true) {
+		while (isRuning) {
 
 			try {
 
+				//	等待客户端连入..
 				Socket clientSocket = srvTunnelSocket.accept();
 
 				Log.d(Common.TAG, "Client Accept...");
 
-				clientSocket.setSoTimeout(120 * 1000);	//	操作超时120S
-				
+				clientSocket.setSoTimeout(120 * 1000); // 操作超时120S
+
+				//	获得连入的端口，用来在表中查找
 				srcPort = clientSocket.getPort();
-				
+
+				Log.d(Common.TAG, "Find Remote Address...");
+
+				//	查找原始的目标IP地址
 				dstHost = getTarget(Integer.toString(srcPort));
+				
 				if (dstHost == null || dstHost.trim().equals("")) {
-					Log.d(Common.TAG, "SPT:" + srcPort + " doesn't match");
+					
+					//	没有找到
+					Log.e(Common.TAG, "SPT:" + srcPort + " doesn't match");
 					clientSocket.close();
 					continue;
 				} else {
+					
 					Log.d(Common.TAG, srcPort + "-------->" + dstHost);
+					
+					//	
+					tunnelPool.execute(new ConnectSession(clientSocket, dstHost));
 				}
-				
 
 			} catch (IOException e) {
 
@@ -64,7 +77,7 @@ public class TunnelSocket extends Thread {
 			}
 		}
 	}
-	
+
 	/**
 	 * 根据源端口号，由dmesg找出iptables记录的目的地址
 	 * 
@@ -86,7 +99,8 @@ public class TunnelSocket extends Thread {
 
 		DataOutputStream os = null;
 		InputStream out = null;
-		try {
+		try 
+		{
 			Process process = Runtime.getRuntime().exec("su");
 
 			os = new DataOutputStream(process.getOutputStream());
@@ -109,12 +123,15 @@ public class TunnelSocket extends Thread {
 
 			// 根据输出构建以源端口为key的地址表
 			while ((line = outR.readLine()) != null) {
-				
-				Log.d(Common.TAG, line);
+
+				// Log.d(Common.TAG, line);
 
 				boolean match = false;
 
 				if (line.contains("fuckCM")) {
+
+					// Log.d(Common.TAG, line);
+
 					String addr = "", destPort = "";
 					String[] parmArr = line.split(" ");
 					for (String parm : parmArr) {
@@ -160,10 +177,27 @@ public class TunnelSocket extends Thread {
 
 		return result;
 	}
-	
+
 	private String getValue(String org) {
+		
 		String result = "";
-		result = org.substring(org.indexOf("=") + 1);
+		try {
+			result = org.substring(org.indexOf("=") + 1);	
+		} catch (Exception e) {
+			Log.e(Common.TAG, "function getValue error", e);
+		}
 		return result;
+	}
+
+	public void CloseAll() {
+
+		try
+		{
+			isRuning = false;
+			tunnelPool.shutdownNow();
+			
+		} catch (Exception e) {
+			Log.e(Common.TAG, "function CloseAll error", e);
+		}
 	}
 }
