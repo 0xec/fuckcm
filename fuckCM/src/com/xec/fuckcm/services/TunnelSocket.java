@@ -18,7 +18,7 @@ public class TunnelSocket extends Thread {
 
 	// 隧道监听套接字
 	public ServerSocket srvTunnelSocket;
-	public Boolean	isRuning = false;
+	public Boolean isRuning = false;
 
 	// 保存连接状态，以备下次查找
 	private static Hashtable<String, String> connReq = new Hashtable<String, String>();
@@ -42,33 +42,34 @@ public class TunnelSocket extends Thread {
 
 			try {
 
-				//	等待客户端连入..
+				// 等待客户端连入..
 				Socket clientSocket = srvTunnelSocket.accept();
 
 				Log.d(Common.TAG, "Client Accept...");
 
 				clientSocket.setSoTimeout(120 * 1000); // 操作超时120S
 
-				//	获得连入的端口，用来在表中查找
+				// 获得连入的端口，用来在表中查找
 				srcPort = clientSocket.getPort();
 
 				Log.d(Common.TAG, "Find Remote Address...");
 
-				//	查找原始的目标IP地址
+				// 查找原始的目标IP地址
 				dstHost = getTarget(Integer.toString(srcPort));
-				
+
 				if (dstHost == null || dstHost.trim().equals("")) {
-					
-					//	没有找到
+
+					// 没有找到
 					Log.e(Common.TAG, "SPT:" + srcPort + " doesn't match");
 					clientSocket.close();
 					continue;
 				} else {
-					
+
 					Log.d(Common.TAG, srcPort + "-------->" + dstHost);
-					
-					//	
-					tunnelPool.execute(new ConnectSession(clientSocket, dstHost));
+
+					//
+					tunnelPool
+							.execute(new ConnectSession(clientSocket, dstHost));
 				}
 
 			} catch (IOException e) {
@@ -99,8 +100,7 @@ public class TunnelSocket extends Thread {
 
 		DataOutputStream os = null;
 		InputStream out = null;
-		try 
-		{
+		try {
 			Process process = Runtime.getRuntime().exec("su");
 
 			os = new DataOutputStream(process.getOutputStream());
@@ -124,7 +124,8 @@ public class TunnelSocket extends Thread {
 			// 根据输出构建以源端口为key的地址表
 			while ((line = outR.readLine()) != null) {
 
-				// Log.d(Common.TAG, line);
+				if (line.equals(""))
+					break;
 
 				boolean match = false;
 
@@ -151,10 +152,23 @@ public class TunnelSocket extends Thread {
 
 					}
 
-					if (match)
+					if (match) {
+						
 						result = addr + ":" + destPort;
-					else
-						connReq.put(addr, destPort);
+						
+						if (connReq.containsKey(sourcePort)) {
+							connReq.remove(sourcePort);
+						}
+						
+					} else {
+						
+						if (addr.length() > 0 && destPort.length() > 0) {
+							
+							String strAddr = addr + ":" + destPort;
+							connReq.put(sourcePort, strAddr);
+							
+						}
+					}
 
 				}
 			}
@@ -179,10 +193,10 @@ public class TunnelSocket extends Thread {
 	}
 
 	private String getValue(String org) {
-		
+
 		String result = "";
 		try {
-			result = org.substring(org.indexOf("=") + 1);	
+			result = org.substring(org.indexOf("=") + 1);
 		} catch (Exception e) {
 			Log.e(Common.TAG, "function getValue error", e);
 		}
@@ -191,11 +205,11 @@ public class TunnelSocket extends Thread {
 
 	public void CloseAll() {
 
-		try
-		{
+		try {
 			isRuning = false;
 			tunnelPool.shutdownNow();
-			
+			srvTunnelSocket.close();
+
 		} catch (Exception e) {
 			Log.e(Common.TAG, "function CloseAll error", e);
 		}
