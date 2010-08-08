@@ -1,6 +1,7 @@
 package com.xec.fuckcm.services;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 
 import com.xec.fuckcm.Config;
@@ -14,11 +15,12 @@ public class fuckcmServices extends Service {
 
 	// 隧道端口
 	public ServerSocket srvTunnelSocket = null;
-	TunnelSocket tunnelSocket = null;
+	public DatagramSocket srvDNSSocket = null;
+	
+	private TunnelSocket tunnelSocket = null;
+	private DNSService	dnsService = null;
+	
 	Config preConfig = new Config(this);
-
-	// private ArrayList<TunnelSocket> TunnelServices = new
-	// ArrayList<TunnelSocket>();
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -37,60 +39,65 @@ public class fuckcmServices extends Service {
 	public void onStart(Intent intent, int startId) {
 
 		Log.d(Common.TAG, "service on Start");
-		
-		int status = preConfig.getInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
-		if (status == Common.SERVICE_RUNING)
-			return;
 
 		try {
 
+			int status = preConfig.getInt(Common.ServiceStatus,
+					Common.SERVICE_STOPPED);
+			if (status == Common.SERVICE_STOPPED) {
+
+				Stop();
+				return;
+			}
+
 			if (srvTunnelSocket != null)
 				srvTunnelSocket.close();
+			
+			if (srvDNSSocket != null)
+				srvDNSSocket.close();
 
 			if (tunnelSocket != null)
 				tunnelSocket.CloseAll();
+			
+			/*
+			 * TCP服务
+			 */
 
 			// 创建监听套接字
 			srvTunnelSocket = new ServerSocket(Common.SERVICE_PORT);
 
-			//	启动监听服务
+			// 启动监听服务
 			tunnelSocket = new TunnelSocket(srvTunnelSocket);
 			tunnelSocket.start();
+			
+			/*
+			 * DNS服务
+			 */
+			//	这个有点BUG,暂时停了
+			srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
+			
+			dnsService = new DNSService(srvDNSSocket);
+			dnsService.start();
+
+			// 启动IP转向
+			Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
+			EnableIPForward();
+			CleanIPTablesRules();
+			SetIPTablesRules();
+
+			Log.i(Common.TAG, "Service Started...");
 
 		} catch (IOException e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Error", e);
+		} catch (Exception e) {
+			Log.e(Common.TAG, "Create Tunnel Socket Exception", e);
 		}
-
-		// 启动IP转向
-		Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
-		EnableIPForward();
-		CleanIPTablesRules();
-		SetIPTablesRules();
-
-		Log.i(Common.TAG, "Service Started...");
-		
-		preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_RUNING);
 	}
 
 	@Override
 	public void onDestroy() {
 
-		Log.d(Common.TAG, "Service Destroy entry");
-		
-		// 关闭IP转向
-		DisableIPForward();		//	关闭IpForward
-		CleanIPTablesRules();	//	清除规则
-
-		tunnelSocket.CloseAll();
-
-		try {
-			srvTunnelSocket.close();
-			
-			preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
-
-		} catch (IOException e) {
-			Log.e(Common.TAG, "Service Destroy Error", e);
-		}
+		Stop();
 	}
 
 	// 打开Ipforward
@@ -122,5 +129,24 @@ public class fuckcmServices extends Service {
 	public void CleanIPTablesRules() {
 
 		Common.rootCMD(Common.cleanIPTables);
+	}
+
+	public void Stop() {
+
+		Log.d(Common.TAG, "Service Stop entry");
+
+		// 关闭IP转向
+		DisableIPForward(); // 关闭IpForward
+		CleanIPTablesRules(); // 清除规则
+
+		try {
+			tunnelSocket.CloseAll();
+			dnsService.CloseAll();
+
+			preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
+
+		} catch (Exception e) {
+			Log.e(Common.TAG, "Service Stop Exception", e);
+		}
 	}
 }

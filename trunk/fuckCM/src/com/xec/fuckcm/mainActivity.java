@@ -22,26 +22,33 @@ public class mainActivity extends Activity implements OnClickListener {
 
 		runBtn = (ToggleButton) findViewById(R.id.RunButton);
 		runBtn.setOnClickListener(this);
-		
-		int status = preConfig.getInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
+
+		int status = preConfig.getInt(Common.ServiceStatus,
+				Common.SERVICE_STOPPED);
 		if (status == Common.SERVICE_RUNING) {
-			
+
 			runBtn.setChecked(true);
+			Intent intent0 = new Intent(this, fuckcmServices.class);
+			startService(intent0);
 		}
 	}
 
 	@Override
 	public void onClick(View v) {
 
+		Intent intent0 = new Intent(this, fuckcmServices.class);
+
 		switch (v.getId()) {
 		case R.id.RunButton:
 			if (runBtn.isChecked()) {
 
-				Intent intent0 = new Intent(this, fuckcmServices.class);
+				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_RUNING);
+
 				startService(intent0);
 			} else {
-				
-				Intent intent0 = new Intent(this, fuckcmServices.class);
+
+				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
+
 				stopService(intent0);
 			}
 			break;
