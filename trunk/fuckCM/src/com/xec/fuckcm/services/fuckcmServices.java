@@ -16,10 +16,10 @@ public class fuckcmServices extends Service {
 	// 隧道端口
 	public ServerSocket srvTunnelSocket = null;
 	public DatagramSocket srvDNSSocket = null;
-	
+
 	private TunnelSocket tunnelSocket = null;
-	private DNSService	dnsService = null;
-	
+	private DNSService dnsService = null;
+
 	Config preConfig = new Config(this);
 
 	@Override
@@ -52,13 +52,13 @@ public class fuckcmServices extends Service {
 
 			if (srvTunnelSocket != null)
 				srvTunnelSocket.close();
-			
+
 			if (srvDNSSocket != null)
 				srvDNSSocket.close();
 
 			if (tunnelSocket != null)
 				tunnelSocket.CloseAll();
-			
+
 			/*
 			 * TCP服务
 			 */
@@ -69,13 +69,13 @@ public class fuckcmServices extends Service {
 			// 启动监听服务
 			tunnelSocket = new TunnelSocket(srvTunnelSocket);
 			tunnelSocket.start();
-			
+
 			/*
 			 * DNS服务
 			 */
-			//	这个有点BUG,暂时停了
+			// 这个有点BUG,暂时停了
 			srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
-			
+
 			dnsService = new DNSService(srvDNSSocket);
 			dnsService.start();
 

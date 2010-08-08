@@ -18,8 +18,8 @@ public class Common {
 	public static int SERVICE_RUNING = 1; // 服务运行
 
 	// 工作参数
-	public static int SERVICE_PORT = 58866;		// 服务端工作端口
-	public static int SERVICE_DNSPORT = 58853;	//	DNS工作端口
+	public static int SERVICE_PORT = 58866; // 服务端工作端口
+	public static int SERVICE_DNSPORT = 58853; // DNS工作端口
 
 	// IPtables命令
 	public static String enableIPForward = "echo 1 > /proc/sys/net/ipv4/ip_forward";
@@ -27,8 +27,7 @@ public class Common {
 	public static String ipTable_command[] = {
 			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! 58866 -j LOG --log-level info --log-prefix \"fuckCM \"",
 			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! 58866 -j DNAT  --to-destination 127.0.0.1:58866",
-			"iptables -t nat -A OUTPUT  -o rmnet0  -p udp --dport 53  -j DNAT  --to-destination 127.0.0.1:58853"
-	};
+			"iptables -t nat -A OUTPUT  -o rmnet0  -p udp --dport 53  -j DNAT  --to-destination 127.0.0.1:58853" };
 
 	public static String cleanIPTables = "iptables -F -t nat";
 
@@ -65,7 +64,7 @@ public class Common {
 			}
 			result = process.waitFor();
 			if (result == 0) {
-		//		Log.d(TAG, cmd + " exec success");
+				// Log.d(TAG, cmd + " exec success");
 			} else {
 				Log.d(TAG, cmd + " exec with result " + result);
 			}

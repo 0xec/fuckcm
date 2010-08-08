@@ -93,6 +93,10 @@ public class TunnelSocket extends Thread {
 		if (connReq.containsKey(sourcePort)) {
 			result = connReq.get(sourcePort);
 			connReq.remove(sourcePort);
+
+			Log.w(Common.TAG, "find target in cache key:" + sourcePort
+					+ " value:" + result);
+
 			return result;
 		}
 
@@ -153,20 +157,27 @@ public class TunnelSocket extends Thread {
 					}
 
 					if (match) {
-						
+
 						result = addr + ":" + destPort;
-						
+
 						if (connReq.containsKey(sourcePort)) {
 							connReq.remove(sourcePort);
 						}
-						
+
 					} else {
-						
+
 						if (addr.length() > 0 && destPort.length() > 0) {
-							
+
 							String strAddr = addr + ":" + destPort;
-							connReq.put(sourcePort, strAddr);
-							
+
+							if (!connReq.contains(sourcePort)) {
+								
+								connReq.put(sourcePort, strAddr);
+
+								Log.w(Common.TAG, "put in cache key:"
+										+ sourcePort + " value:" + strAddr);
+
+							}
 						}
 					}
 

@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.System;
 import java.net.Socket;
+import java.util.Arrays;
+
 import android.util.Log;
 
 import com.xec.fuckcm.common.Common;
@@ -58,7 +60,6 @@ public class ConnectSession implements Runnable {
 						"Create Tunnel Succcess use time:"
 								+ (System.currentTimeMillis() - starTime)
 								/ 1000);
-				Log.i(Common.TAG, "Tunnel Redirect...");
 
 			} catch (Exception e) {
 				Log.e(Common.TAG, "Get stream error:", e);
@@ -144,7 +145,7 @@ public class ConnectSession implements Runnable {
 					ProxyRequest = strMethod + " http://" + hostName
 							+ ProxyRequest;
 
-				Log.v(Common.TAG, ProxyRequest);
+				// Log.v(Common.TAG, ProxyRequest);
 
 				proxyOutput.write(ProxyRequest.getBytes());
 				proxyOutput.flush();
@@ -171,23 +172,23 @@ public class ConnectSession implements Runnable {
 				proxyOutput.write(connectStr.getBytes());
 				proxyOutput.flush();
 
-				Log.d(Common.TAG, connectStr);
+				// Log.d(Common.TAG, connectStr);
 
 				String result = proxyInput.readLine();
 				String line = "";
 
-				Log.d(Common.TAG, result);
+				// Log.d(Common.TAG, result);
 				while ((line = proxyInput.readLine()) != null) {
 
 					if (line.trim().equals(""))
 						break;
 
-					Log.d(Common.TAG, line);
+					// Log.d(Common.TAG, line);
 				}
 
 				if (result != null && result.contains("200")) {
 
-					Log.d(Common.TAG, result);
+					// Log.d(Common.TAG, result);
 					// isConnected = true;
 					Result = true;
 				} else {
@@ -230,16 +231,17 @@ public class ConnectSession implements Runnable {
 		public void run() {
 
 			int count = 0;
+			byte[] buff = new byte[1024];
 			try {
 
 				while (isConnected) {
 
-					byte[] buff = new byte[1024];
+					Arrays.fill(buff, (byte)0);
 					count = 0;
 
 					count = dataInputStream.read(buff);
 
-					Log.w(Common.TAG, "transfer byte: " + count);
+					// Log.w(Common.TAG, "transfer byte: " + count);
 
 					if (count > 0) {
 						dataOutputStream.write(buff, 0, count);
@@ -247,7 +249,7 @@ public class ConnectSession implements Runnable {
 
 					} else if (count < 0) {
 
-						Log.e(Common.TAG, "length < 0 Exit");
+						// Log.e(Common.TAG, "length < 0 Exit");
 						break;
 					}
 				}
@@ -255,15 +257,33 @@ public class ConnectSession implements Runnable {
 				remoteSocket.close();
 				localSocket.close();
 
-				Log.e(Common.TAG, "Connect Close Recv Exit");
+				// Log.e(Common.TAG, "Connect Close Recv Exit");
 			} catch (IOException e) {
-
-				Log.e(Common.TAG, "Redirect Data Error Connection Close");
-				isConnected = false;
-			} catch (Exception e) {
 
 				Log.e(Common.TAG, "Redirect Data Error Connection Close", e);
 				isConnected = false;
+				
+				try {
+					if (count > 0) {
+						
+						dataOutputStream.write(buff, 0, count);
+						dataOutputStream.flush();
+					}
+				} catch (Exception e2) {
+					Log.e(Common.TAG, "Redirect Data Write Exception", e2);
+				}
+			} catch (Exception e) {
+
+				Log.e(Common.TAG, "Redirect Data Excpetion", e);
+				isConnected = false;
+			} finally {
+				
+				try {
+					remoteSocket.close();
+					localSocket.close();
+				} catch (Exception e2) {
+					Log.e(Common.TAG, "Finally Close Error", e2);
+				}
 			}
 
 		}
