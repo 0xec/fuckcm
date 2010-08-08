@@ -28,8 +28,6 @@ public class mainActivity extends Activity implements OnClickListener {
 		if (status == Common.SERVICE_RUNING) {
 
 			runBtn.setChecked(true);
-			Intent intent0 = new Intent(this, fuckcmServices.class);
-			startService(intent0);
 		}
 	}
 
