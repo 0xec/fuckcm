@@ -5,6 +5,7 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 
 import com.xec.fuckcm.Config;
+import com.xec.fuckcm.R;
 import com.xec.fuckcm.common.Common;
 import android.app.Service;
 import android.content.Intent;
@@ -33,6 +34,8 @@ public class fuckcmServices extends Service {
 	public void onCreate() {
 
 		Log.d(Common.TAG, "service on create");
+		
+		EnableIPForward();
 	}
 
 	@Override
@@ -80,17 +83,20 @@ public class fuckcmServices extends Service {
 			dnsService.start();
 
 			// 启动IP转向
-			Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
-			EnableIPForward();
+//			Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
 			CleanIPTablesRules();
 			SetIPTablesRules();
 
 			Log.i(Common.TAG, "Service Started...");
+			
+			PostUIMessage(getString(R.string.START_SUCCESS));
 
 		} catch (IOException e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Error", e);
+			PostUIMessage(getString(R.string.START_EXCEPTION));
 		} catch (Exception e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Exception", e);
+			PostUIMessage(getString(R.string.START_EXCEPTION));
 		}
 	}
 
@@ -136,7 +142,7 @@ public class fuckcmServices extends Service {
 		Log.d(Common.TAG, "Service Stop entry");
 
 		// 关闭IP转向
-		DisableIPForward(); // 关闭IpForward
+	//	DisableIPForward(); // 关闭IpForward
 		CleanIPTablesRules(); // 清除规则
 
 		try {
@@ -147,6 +153,25 @@ public class fuckcmServices extends Service {
 
 		} catch (Exception e) {
 			Log.e(Common.TAG, "Service Stop Exception", e);
+		}
+		
+		PostUIMessage(getString(R.string.STOP_SUCCESS));
+	}
+	
+	/**
+	 * 传递一个消息给UI
+	 */
+	public void PostUIMessage(String strMessage) {
+		
+		try {
+			
+			Intent intent0 = new Intent(Common.actionString);
+			intent0.putExtra("msg", strMessage);
+			sendBroadcast(intent0);
+			
+		} catch (Exception e) {
+
+			Log.e(Common.TAG, "Post UI Message Error", e);
 		}
 	}
 }
