@@ -40,8 +40,6 @@ public class fuckcmServices extends Service {
 	public void onCreate() {
 
 		Log.d(Common.TAG, "service on create");
-
-		EnableIPForward();
 	}
 
 	@Override
@@ -59,6 +57,8 @@ public class fuckcmServices extends Service {
 				Stop();
 				return;
 			}
+			
+			EnableIPForward();
 
 			// 如果套接字已存在，则关闭套接字
 			if (srvTunnelSocket != null)
@@ -153,8 +153,8 @@ public class fuckcmServices extends Service {
 		Log.d(Common.TAG, "Service Stop entry");
 
 		// 关闭IP转向
-		// DisableIPForward(); // 关闭IpForward
 		CleanIPTablesRules(); // 清除规则
+		DisableIPForward(); // 关闭IpForward
 
 		//	关闭套接字服务
 		tunnelSocket.CloseAll();
