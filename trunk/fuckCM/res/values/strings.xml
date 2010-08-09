@@ -4,5 +4,8 @@
     <string name="TEXT_TITLE">启动服务</string>
     <string name="BTN_STOPING">停止</string>
     <string name="BTN_RUNING">运行中</string>
+    <string name="START_SUCCESS">服务启动成功...</string>
+    <string name="START_EXCEPTION">服务启动异常!</string>
+    <string name="STOP_SUCCESS">服务停止成功...</string>
     <string name="app_name">FuckCM Tunnel</string>
 </resources>

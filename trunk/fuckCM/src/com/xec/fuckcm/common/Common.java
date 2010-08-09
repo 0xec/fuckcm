@@ -1,10 +1,7 @@
 package com.xec.fuckcm.common;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import android.util.Log;
 
 public class Common {
@@ -16,6 +13,8 @@ public class Common {
 	public static String ServiceStatus = "SERVICESTATUS";
 	public static int SERVICE_STOPPED = 0; // 服务停止
 	public static int SERVICE_RUNING = 1; // 服务运行
+	
+	public static String actionString = "com.xec.fuckcm.recv";
 
 	// 工作参数
 	public static int SERVICE_PORT = 58866; // 服务端工作端口
@@ -44,27 +43,18 @@ public class Common {
 	public static synchronized int rootCMD(String cmd) {
 		int result = -1;
 		DataOutputStream os = null;
-		InputStream err = null;
 		try {
 			Process process = Runtime.getRuntime().exec("su");
-			err = process.getErrorStream();
-			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
-					1024 * 8);
 
 			os = new DataOutputStream(process.getOutputStream());
-
 			os.writeBytes(cmd + "\n");
 			os.flush();
 			os.writeBytes("exit\n");
 			os.flush();
 
-			String resp;
-			while ((resp = bre.readLine()) != null) {
-				Log.d(TAG, resp);
-			}
 			result = process.waitFor();
 			if (result == 0) {
-				// Log.d(TAG, cmd + " exec success");
+				Log.d(TAG, cmd + " exec success");
 			} else {
 				Log.d(TAG, cmd + " exec with result " + result);
 			}
