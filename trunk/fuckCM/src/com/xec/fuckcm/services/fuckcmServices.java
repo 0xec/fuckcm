@@ -6,8 +6,14 @@ import java.net.ServerSocket;
 
 import com.xec.fuckcm.Config;
 import com.xec.fuckcm.R;
+import com.xec.fuckcm.mainActivity;
 import com.xec.fuckcm.common.Common;
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
@@ -34,7 +40,7 @@ public class fuckcmServices extends Service {
 	public void onCreate() {
 
 		Log.d(Common.TAG, "service on create");
-		
+
 		EnableIPForward();
 	}
 
@@ -45,6 +51,7 @@ public class fuckcmServices extends Service {
 
 		try {
 
+			// 如果保存的状态是停止，则停止服务
 			int status = preConfig.getInt(Common.ServiceStatus,
 					Common.SERVICE_STOPPED);
 			if (status == Common.SERVICE_STOPPED) {
@@ -53,6 +60,7 @@ public class fuckcmServices extends Service {
 				return;
 			}
 
+			// 如果套接字已存在，则关闭套接字
 			if (srvTunnelSocket != null)
 				srvTunnelSocket.close();
 
@@ -76,20 +84,23 @@ public class fuckcmServices extends Service {
 			/*
 			 * DNS服务
 			 */
-			// 这个有点BUG,暂时停了
+			// 这个有点BUG，暂时不起作用，以后找原因
 			srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
 
 			dnsService = new DNSService(srvDNSSocket);
 			dnsService.start();
 
 			// 启动IP转向
-//			Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
+			// Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
 			CleanIPTablesRules();
 			SetIPTablesRules();
 
 			Log.i(Common.TAG, "Service Started...");
-			
+
 			PostUIMessage(getString(R.string.START_SUCCESS));
+			PostNotificationMessage(R.drawable.icon,
+					getString(R.string.app_name),
+					getString(R.string.START_SUCCESS));
 
 		} catch (IOException e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Error", e);
@@ -142,36 +153,60 @@ public class fuckcmServices extends Service {
 		Log.d(Common.TAG, "Service Stop entry");
 
 		// 关闭IP转向
-	//	DisableIPForward(); // 关闭IpForward
+		// DisableIPForward(); // 关闭IpForward
 		CleanIPTablesRules(); // 清除规则
 
-		try {
-			tunnelSocket.CloseAll();
-			dnsService.CloseAll();
+		//	关闭套接字服务
+		tunnelSocket.CloseAll();
+		dnsService.CloseAll();
 
-			preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
+		preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
 
-		} catch (Exception e) {
-			Log.e(Common.TAG, "Service Stop Exception", e);
-		}
-		
+		Log.i(Common.TAG, "Service Stop Success");
 		PostUIMessage(getString(R.string.STOP_SUCCESS));
+		CleanNotificationMessage();
+
 	}
-	
+
 	/**
 	 * 传递一个消息给UI
 	 */
 	public void PostUIMessage(String strMessage) {
-		
+
 		try {
-			
+
 			Intent intent0 = new Intent(Common.actionString);
 			intent0.putExtra("msg", strMessage);
 			sendBroadcast(intent0);
-			
+
 		} catch (Exception e) {
 
 			Log.e(Common.TAG, "Post UI Message Error", e);
 		}
+	}
+
+	/**
+	 * 显示状态栏通知
+	 */
+	public void PostNotificationMessage(int Icon, String Title, String Message) {
+
+		NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		Notification note = new Notification(Icon, Message,
+				System.currentTimeMillis());
+
+		// note.flags = Notification.FLAG_ONGOING_EVENT;
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, mainActivity.class), 0);
+		note.setLatestEventInfo(this, Title, Message, pendingIntent);
+		notifiManager.notify(0, note);
+	}
+
+	/**
+	 * 清除状态栏通知
+	 */
+	public void CleanNotificationMessage() {
+
+		NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notifiManager.cancel(0);
 	}
 }

@@ -122,7 +122,7 @@ public class mainActivity extends Activity implements OnClickListener {
 		}
 	}
 	
-	@Override
+/*	@Override
 	public void onDestroy() {
 		
 		try {
@@ -136,5 +136,5 @@ public class mainActivity extends Activity implements OnClickListener {
 			
 			Log.e(Common.TAG, "Unregister Receiver Error", e);
 		}
-	}
+	}*/
 }
