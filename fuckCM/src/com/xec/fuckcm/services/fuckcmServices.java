@@ -28,7 +28,7 @@ public class fuckcmServices extends Service {
 	private DNSService dnsService = null;
 
 	Config preConfig = new Config(this);
-	
+
 	public Boolean isRuning = false;
 
 	@Override
@@ -57,25 +57,25 @@ public class fuckcmServices extends Service {
 				Stop();
 				return;
 			}
-			
+
 			if (isRuning) {
-				
+
 				return;
 			}
-			
+
 			Log.d(Common.TAG, "service on Start");
-			
+
 			MountFileSystem();
-			
+
 			EnableIPForward();
 
 			// 如果套接字已存在，则关闭套接字
 			if (tunnelSocket != null)
 				tunnelSocket.CloseAll();
-			
+
 			if (dnsService != null)
 				dnsService.CloseAll();
-			
+
 			if (srvTunnelSocket != null)
 				srvTunnelSocket.close();
 
@@ -113,7 +113,7 @@ public class fuckcmServices extends Service {
 			PostNotificationMessage(R.drawable.icon,
 					getString(R.string.app_name),
 					getString(R.string.START_SUCCESS));
-			
+
 			isRuning = true;
 
 		} catch (IOException e) {
@@ -147,9 +147,12 @@ public class fuckcmServices extends Service {
 	// 设置 IPTables
 	public void SetIPTablesRules() {
 
+		Log.d(Common.TAG, "set ip tables");
+
 		for (String rule : Common.ipTable_command) {
 			try {
 				Common.rootCMD(rule);
+				Common.testSleep(500);
 
 			} catch (Exception e) {
 				Log.e(Common.TAG, e.getLocalizedMessage());
@@ -160,20 +163,21 @@ public class fuckcmServices extends Service {
 	// 清空IPTables规则
 	public void CleanIPTablesRules() {
 
+		Log.d(Common.TAG, "clean ip tables");
 		Common.rootCMD(Common.cleanIPTables);
 	}
 
 	public void Stop() {
 
 		Log.d(Common.TAG, "Service Stop entry");
-		
+
 		UnmountFileSystem();
 
 		// 关闭IP转向
 		CleanIPTablesRules(); // 清除规则
 		DisableIPForward(); // 关闭IpForward
 
-		//	关闭套接字服务
+		// 关闭套接字服务
 		tunnelSocket.CloseAll();
 		dnsService.CloseAll();
 
@@ -182,7 +186,7 @@ public class fuckcmServices extends Service {
 		Log.i(Common.TAG, "Service Stop Success");
 		PostUIMessage(getString(R.string.STOP_SUCCESS));
 		CleanNotificationMessage();
-		
+
 		isRuning = false;
 
 	}
@@ -210,7 +214,7 @@ public class fuckcmServices extends Service {
 	public void PostNotificationMessage(int Icon, String Title, String Message) {
 
 		try {
-		
+
 			NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			Notification note = new Notification(Icon, Message,
 					System.currentTimeMillis());
@@ -220,7 +224,7 @@ public class fuckcmServices extends Service {
 					new Intent(this, mainActivity.class), 0);
 			note.setLatestEventInfo(this, Title, Message, pendingIntent);
 			notifiManager.notify(0, note);
-			
+
 		} catch (Exception e) {
 
 			Log.e(Common.TAG, "PostNotificationMessage error", e);
@@ -235,16 +239,18 @@ public class fuckcmServices extends Service {
 		NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notifiManager.cancel(0);
 	}
-	
+
 	public void MountFileSystem() {
-		
+
 		Common.rootCMD("mkdir /sdcard/fuckcm_etc");
+		Common.testSleep(1000);
 		Common.rootCMD("mount /system/etc /sdcard/fuckcm_etc");
+		Common.testSleep(1000);
 		Common.rootCMD("mount -o rw,remount /sdcard/fuckcm_etc");
 	}
-	
+
 	public void UnmountFileSystem() {
-		
+
 		Common.rootCMD("umount /sdcard/fuckcm_etc");
 	}
 }

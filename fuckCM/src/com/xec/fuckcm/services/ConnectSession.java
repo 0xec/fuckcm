@@ -236,7 +236,7 @@ public class ConnectSession implements Runnable {
 
 				while (isConnected) {
 
-					Arrays.fill(buff, (byte)0);
+					Arrays.fill(buff, (byte) 0);
 					count = 0;
 
 					count = dataInputStream.read(buff);
@@ -262,10 +262,10 @@ public class ConnectSession implements Runnable {
 
 				Log.e(Common.TAG, "Redirect Data Error Connection Close", e);
 				isConnected = false;
-				
+
 				try {
 					if (count > 0) {
-						
+
 						dataOutputStream.write(buff, 0, count);
 						dataOutputStream.flush();
 					}
@@ -277,7 +277,7 @@ public class ConnectSession implements Runnable {
 				Log.e(Common.TAG, "Redirect Data Excpetion", e);
 				isConnected = false;
 			} finally {
-				
+
 				try {
 					remoteSocket.close();
 					localSocket.close();

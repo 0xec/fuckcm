@@ -7,5 +7,7 @@
     <string name="START_SUCCESS">服务启动成功...</string>
     <string name="START_EXCEPTION">服务启动异常!</string>
     <string name="STOP_SUCCESS">服务停止成功...</string>
+    <string name="PRE_START_SERVICE">服务启动中，请等待一段时间。</string>
+    <string name="PRE_STOP_SERVICE">服务停止中...</string>
     <string name="app_name">FuckCM Tunnel</string>
 </resources>

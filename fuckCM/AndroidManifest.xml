@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.xec.fuckcm" android:versionCode="1" android:versionName="1.0 rc1">
+	package="com.xec.fuckcm" android:versionName="1.0.17 Alpha" android:versionCode="17">
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 		<activity android:name=".mainActivity" android:label="@string/app_name">
 			<intent-filter>
