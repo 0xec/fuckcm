@@ -28,6 +28,8 @@ public class fuckcmServices extends Service {
 	private DNSService dnsService = null;
 
 	Config preConfig = new Config(this);
+	
+	public Boolean isRuning = false;
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -40,6 +42,8 @@ public class fuckcmServices extends Service {
 	public void onCreate() {
 
 		Log.d(Common.TAG, "service on create");
+		
+		MountFileSystem();
 	}
 
 	@Override
@@ -58,17 +62,25 @@ public class fuckcmServices extends Service {
 				return;
 			}
 			
+			if (isRuning) {
+				
+				Stop();
+			}
+			
 			EnableIPForward();
 
 			// 如果套接字已存在，则关闭套接字
+			if (tunnelSocket != null)
+				tunnelSocket.CloseAll();
+			
+			if (dnsService != null)
+				dnsService.CloseAll();
+			
 			if (srvTunnelSocket != null)
 				srvTunnelSocket.close();
 
 			if (srvDNSSocket != null)
 				srvDNSSocket.close();
-
-			if (tunnelSocket != null)
-				tunnelSocket.CloseAll();
 
 			/*
 			 * TCP服务
@@ -101,6 +113,8 @@ public class fuckcmServices extends Service {
 			PostNotificationMessage(R.drawable.icon,
 					getString(R.string.app_name),
 					getString(R.string.START_SUCCESS));
+			
+			isRuning = true;
 
 		} catch (IOException e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Error", e);
@@ -115,6 +129,7 @@ public class fuckcmServices extends Service {
 	public void onDestroy() {
 
 		Stop();
+		UnmountFileSystem();
 	}
 
 	// 打开Ipforward
@@ -165,6 +180,8 @@ public class fuckcmServices extends Service {
 		Log.i(Common.TAG, "Service Stop Success");
 		PostUIMessage(getString(R.string.STOP_SUCCESS));
 		CleanNotificationMessage();
+		
+		isRuning = false;
 
 	}
 
@@ -208,5 +225,17 @@ public class fuckcmServices extends Service {
 
 		NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notifiManager.cancel(0);
+	}
+	
+	public void MountFileSystem() {
+		
+		Common.rootCMD("mkdir /sdcard/fuckcm_etc");
+		Common.rootCMD("mount /system/etc /sdcard/fuckcm_etc");
+		Common.rootCMD("mount -o rw,remount /sdcard/fuckcm_etc");
+	}
+	
+	public void UnmountFileSystem() {
+		
+		Common.rootCMD("umount /sdcard/fuckcm_etc");
 	}
 }

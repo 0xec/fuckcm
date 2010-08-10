@@ -2,6 +2,9 @@ package com.xec.fuckcm.services;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -76,7 +79,9 @@ public class DNSService extends Thread {
 						"response dns request success"
 								+ dataPacket.getAddress().toString() + ":"
 								+ dataPacket.getPort());
-
+				
+				SaveToHosts(strDomain, strIPString);
+				
 			} catch (IOException e) {
 				Log.e(Common.TAG, "DNS Recv IO Exception", e);
 			} catch (Exception e) {
@@ -322,5 +327,45 @@ public class DNSService extends Thread {
 
 		isRuning = false;
 		socket.close();
+	}
+	
+	public void SaveToHosts(String domain, String ip) {
+		
+		try {
+			
+	//		MountFileSystem();
+			
+			String dnsHosts = ip + "\t\t\t" + domain;
+			
+			File fe = new File("/sdcard/fuckcm_etc/hosts");
+			if (!fe.exists()) {
+				fe.createNewFile();
+			}
+			
+			FileReader fr = new FileReader(fe);
+			FileOutputStream fos = new FileOutputStream(fe, true);
+
+			BufferedReader bReader = new BufferedReader(fr);
+
+			String line = "";
+			while ((line = bReader.readLine()) != null) {
+				
+				Log.d("hosts", line);
+				if (line.contains(domain))
+					return;
+			}
+			fr.close();
+			
+			dnsHosts = "\n" + dnsHosts;
+			
+			fos.write(dnsHosts.getBytes());
+			fos.close();
+			
+	//		UnmountFileSystem();
+
+		} catch (Exception e) {
+
+			Log.e(Common.TAG, "save Dns error", e);
+		}
 	}
 }
