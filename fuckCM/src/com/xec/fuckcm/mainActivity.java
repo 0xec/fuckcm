@@ -95,6 +95,12 @@ public class mainActivity extends Activity implements OnClickListener {
 		
 		intentFilter = new IntentFilter(Common.actionString);
 		registerReceiver(mBroadRecv, intentFilter);
+		
+		String apnName = Common.getAPNName(this);
+		if (!apnName.equals("cmwap")) {
+			
+			runBtn.setEnabled(false);
+		}
 	}
 
 	@Override

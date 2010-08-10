@@ -91,6 +91,7 @@ public class TunnelSocket extends Thread {
 
 		// 在表中查找已匹配项目
 		if (connReq.containsKey(sourcePort)) {
+			
 			result = connReq.get(sourcePort);
 			connReq.remove(sourcePort);
 
@@ -100,7 +101,7 @@ public class TunnelSocket extends Thread {
 			return result;
 		}
 
-		final String command = "dmesg -c"; // 副作用未知
+		final String command = "dmesg -c";
 
 		DataOutputStream os = null;
 		InputStream out = null;
@@ -132,6 +133,8 @@ public class TunnelSocket extends Thread {
 					break;
 
 				boolean match = false;
+				
+				Log.d(Common.TAG, line);
 
 				if (line.contains("fuckCM")) {
 
@@ -181,8 +184,8 @@ public class TunnelSocket extends Thread {
 						}
 					}
 
-				}
-			}
+				} // end if
+			} // end while
 
 			os.close();
 			process.destroy();
