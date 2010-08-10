@@ -42,8 +42,6 @@ public class fuckcmServices extends Service {
 	public void onCreate() {
 
 		Log.d(Common.TAG, "service on create");
-		
-		MountFileSystem();
 	}
 
 	@Override
@@ -54,7 +52,7 @@ public class fuckcmServices extends Service {
 			// 如果保存的状态是停止，则停止服务
 			int status = preConfig.getInt(Common.ServiceStatus,
 					Common.SERVICE_STOPPED);
-			if (status == Common.SERVICE_STOPPED) {
+			if (status == Common.SERVICE_STOPPED && isRuning) {
 
 				Stop();
 				return;
@@ -66,6 +64,8 @@ public class fuckcmServices extends Service {
 			}
 			
 			Log.d(Common.TAG, "service on Start");
+			
+			MountFileSystem();
 			
 			EnableIPForward();
 
@@ -166,6 +166,8 @@ public class fuckcmServices extends Service {
 	public void Stop() {
 
 		Log.d(Common.TAG, "Service Stop entry");
+		
+		UnmountFileSystem();
 
 		// 关闭IP转向
 		CleanIPTablesRules(); // 清除规则

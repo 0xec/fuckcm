@@ -13,6 +13,13 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		
+		Config preConfig = new Config(context);
+		int status = preConfig.getInt(Common.ServiceStatus,
+				Common.SERVICE_STOPPED);
+		
+		if (status == Common.SERVICE_STOPPED)
+			return;
 
 		String apnNameString = Common.getAPNName(context);
 		
