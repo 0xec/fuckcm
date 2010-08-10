@@ -27,14 +27,14 @@ public class TunnelSocket extends Thread {
 
 	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
-	
+
 	Timer timer = new Timer();
 	TimerTask timerTask = new TimerTask() {
-		
+
 		@Override
 		public void run() {
 
-			//	设置一个不存在的端口，清空日志，并将已存在的写入HASH表
+			// 设置一个不存在的端口，清空日志，并将已存在的写入HASH表
 			getTarget("99999");
 		}
 	};
@@ -43,8 +43,8 @@ public class TunnelSocket extends Thread {
 
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
-		
-		timer.schedule(timerTask, 3000);
+
+		timer.schedule(timerTask, 10000, 10000);
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class TunnelSocket extends Thread {
 
 		// 在表中查找已匹配项目
 		if (connReq.containsKey(sourcePort)) {
-			
+
 			result = connReq.get(sourcePort);
 			connReq.remove(sourcePort);
 
@@ -148,7 +148,7 @@ public class TunnelSocket extends Thread {
 					break;
 
 				boolean match = false;
-				
+
 				Log.d("logs", line);
 
 				if (line.contains("fuckCM")) {
@@ -164,7 +164,7 @@ public class TunnelSocket extends Thread {
 						}
 
 						if (trimParm.startsWith("SPT")) {
-							
+
 							srcPort = getValue(trimParm);
 							if (sourcePort.equals(srcPort))
 								match = true;
@@ -186,12 +186,13 @@ public class TunnelSocket extends Thread {
 
 					} else {
 
-						if (addr.length() > 0 && destPort.length() > 0 && srcPort.length() > 0) {
+						if (addr.length() > 0 && destPort.length() > 0
+								&& srcPort.length() > 0) {
 
 							String strAddr = addr + ":" + destPort;
 
 							if (!connReq.contains(srcPort)) {
-								
+
 								connReq.put(srcPort, strAddr);
 
 								Log.w(Common.TAG, "put in cache key:"
@@ -240,6 +241,8 @@ public class TunnelSocket extends Thread {
 			isRuning = false;
 			tunnelPool.shutdownNow();
 			srvTunnelSocket.close();
+
+			timer.cancel();
 
 		} catch (Exception e) {
 			Log.e(Common.TAG, "function CloseAll error", e);

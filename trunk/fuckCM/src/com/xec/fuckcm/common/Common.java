@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,7 +21,7 @@ public class Common {
 	public static String ServiceStatus = "SERVICESTATUS";
 	public static int SERVICE_STOPPED = 0; // 服务停止
 	public static int SERVICE_RUNING = 1; // 服务运行
-	
+
 	public static String actionString = "com.xec.fuckcm.recv";
 
 	// 工作参数
@@ -30,9 +32,15 @@ public class Common {
 	public static String enableIPForward = "echo 1 > /proc/sys/net/ipv4/ip_forward";
 	public static String disableIPForward = "echo 0 > /proc/sys/net/ipv4/ip_forward";
 	public static String ipTable_command[] = {
-			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! " + SERVICE_PORT + " -j LOG --log-level info --log-prefix \"fuckCM \"",
-			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! " + SERVICE_PORT + " -j DNAT  --to-destination 127.0.0.1:" + SERVICE_PORT,
-			"iptables -t nat -A OUTPUT  -o rmnet0  -p udp --dport 53  -j DNAT  --to-destination 127.0.0.1:" + SERVICE_DNSPORT };
+			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! "
+					+ SERVICE_PORT
+					+ " -j LOG --log-level info --log-prefix \"fuckCM \"",
+			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! "
+					+ SERVICE_PORT
+					+ " -j DNAT  --to-destination 127.0.0.1:"
+					+ SERVICE_PORT,
+			"iptables -t nat -A OUTPUT  -o rmnet0  -p udp --dport 53  -j DNAT  --to-destination 127.0.0.1:"
+					+ SERVICE_DNSPORT };
 
 	public static String cleanIPTables = "iptables -F -t nat";
 
@@ -45,9 +53,8 @@ public class Common {
 
 	/*
 	 * 公用函数
-	 */	
-	public static synchronized void rootCMD(String cmd)
-	{
+	 */
+	public static synchronized void rootCMD(String cmd) {
 		int result = -1;
 		DataOutputStream os = null;
 		InputStream err = null;
@@ -66,32 +73,31 @@ public class Common {
 
 			String resp;
 			while ((resp = bre.readLine()) != null) {
-				
+
 				if (resp.equals(""))
 					break;
-				
+
 				Log.d(TAG, resp);
 			}
-			
+
 			result = process.waitFor();
 			if (result == 0)
 				Log.d(TAG, cmd + " exec success");
 			else {
 				Log.d(TAG, cmd + " exec with result " + result);
 			}
-			
+
 			os.close();
 			process.destroy();
-			
+
 		} catch (IOException e) {
-			
+
 			Log.e(TAG, "Failed to exec command", e);
 		} catch (InterruptedException e) {
-			
+
 			Log.e(TAG, "Thread Exception error", e);
 		} finally {
-			try
-			{
+			try {
 				if (os != null) {
 					os.close();
 				}
@@ -100,53 +106,65 @@ public class Common {
 
 		}
 	}
-	
+
+	/**
+	 * 延时函数
+	 */
+	public static void testSleep(long time) {
+		try {
+			TimeUnit.MILLISECONDS.sleep(time);
+		} catch (InterruptedException e) {
+		}
+	}
+
 	/**
 	 * 获取apn的名字
 	 */
 	public static String getAPNName(Context context) {
-		
+
 		String apnName = "";
-		
-		//	判断是否为wifi
-		ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		// 判断是否为wifi
+		ConnectivityManager connectivityManager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-		
+
 		if (networkInfo == null) {
-			
+
 			apnName = "none";
 			return apnName;
 		}
-		
-		
+
 		if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
 			apnName = "wifi";
 			return apnName;
 		}
-		
+
 		if (networkInfo.getExtraInfo().length() > 0) {
-			
+
 			apnName = networkInfo.getExtraInfo();
 			return apnName;
 		}
-		
-//		//	查询 apn 的名字
-//		Cursor cursor = context.getContentResolver().query(Uri.parse("content://telephony/carriers"), new String[] {"apn"}, "current=1", null, null);
-//		
-//		if (cursor != null) {
-//			
-//			try {
-//				if (cursor.moveToFirst()) {
-//					apnName = cursor.getString(0);
-//				}
-//			} catch (Exception e) {
-//				Log.e(TAG, "Can not get Network info", e);
-//			} finally {
-//				cursor.close();
-//			}
-//		}
-		
+
+		// // 查询 apn 的名字
+		// Cursor cursor =
+		// context.getContentResolver().query(Uri.parse("content://telephony/carriers"),
+		// new String[] {"apn"}, "current=1", null, null);
+		//
+		// if (cursor != null) {
+		//
+		// try {
+		// if (cursor.moveToFirst()) {
+		// apnName = cursor.getString(0);
+		// }
+		// } catch (Exception e) {
+		// Log.e(TAG, "Can not get Network info", e);
+		// } finally {
+		// cursor.close();
+		// }
+		// }
+
 		return apnName;
-		
+
 	}
 }

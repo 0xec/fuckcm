@@ -63,25 +63,24 @@ public class DNSService extends Thread {
 					continue;
 				}
 
-		/*		// 构建回应报文
-				byte[] responseBuffer = BuildDNSResponsePacket(data, len,
-						strIPString);
-				int replen = responseBuffer.length;
+				/*
+				 * // 构建回应报文 byte[] responseBuffer =
+				 * BuildDNSResponsePacket(data, len, strIPString); int replen =
+				 * responseBuffer.length;
+				 * 
+				 * DatagramPacket resp = new DatagramPacket(responseBuffer, 0,
+				 * replen); resp.setPort(dataPacket.getPort());
+				 * resp.setAddress(dataPacket.getAddress());
+				 * 
+				 * socket.send(resp);
+				 * 
+				 * Log.i(Common.TAG, "response dns request success" +
+				 * dataPacket.getAddress().toString() + ":" +
+				 * dataPacket.getPort());
+				 */
 
-				DatagramPacket resp = new DatagramPacket(responseBuffer, 0,
-						replen);
-				resp.setPort(dataPacket.getPort());
-				resp.setAddress(dataPacket.getAddress());
-
-				socket.send(resp);
-
-				Log.i(Common.TAG,
-						"response dns request success"
-								+ dataPacket.getAddress().toString() + ":"
-								+ dataPacket.getPort());*/
-				
 				SaveToHosts(strDomain, strIPString);
-				
+
 			} catch (IOException e) {
 				Log.e(Common.TAG, "DNS Recv IO Exception", e);
 			} catch (Exception e) {
@@ -328,20 +327,20 @@ public class DNSService extends Thread {
 		isRuning = false;
 		socket.close();
 	}
-	
+
 	public void SaveToHosts(String domain, String ip) {
-		
+
 		try {
-			
-	//		MountFileSystem();
-			
+
+			// MountFileSystem();
+
 			String dnsHosts = ip + "\t\t\t" + domain;
-			
+
 			File fe = new File("/sdcard/fuckcm_etc/hosts");
 			if (!fe.exists()) {
 				fe.createNewFile();
 			}
-			
+
 			FileReader fr = new FileReader(fe);
 			FileOutputStream fos = new FileOutputStream(fe, true);
 
@@ -349,21 +348,21 @@ public class DNSService extends Thread {
 
 			String line = "";
 			while ((line = bReader.readLine()) != null) {
-				
+
 				Log.d("hosts", line);
 				if (line.contains(domain))
 					return;
 			}
 			fr.close();
-			
+
 			dnsHosts = "\n" + dnsHosts;
-			
+
 			fos.write(dnsHosts.getBytes());
 			fos.close();
-			
+
 			Log.d(Common.TAG, "Save To Hosts" + ip + "-->" + domain);
-			
-	//		UnmountFileSystem();
+
+			// UnmountFileSystem();
 
 		} catch (Exception e) {
 
