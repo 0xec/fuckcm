@@ -63,7 +63,7 @@ public class DNSService extends Thread {
 					continue;
 				}
 
-				// 构建回应报文
+		/*		// 构建回应报文
 				byte[] responseBuffer = BuildDNSResponsePacket(data, len,
 						strIPString);
 				int replen = responseBuffer.length;
@@ -78,7 +78,7 @@ public class DNSService extends Thread {
 				Log.i(Common.TAG,
 						"response dns request success"
 								+ dataPacket.getAddress().toString() + ":"
-								+ dataPacket.getPort());
+								+ dataPacket.getPort());*/
 				
 				SaveToHosts(strDomain, strIPString);
 				
@@ -360,6 +360,8 @@ public class DNSService extends Thread {
 			
 			fos.write(dnsHosts.getBytes());
 			fos.close();
+			
+			Log.d(Common.TAG, "Save To Hosts" + ip + "-->" + domain);
 			
 	//		UnmountFileSystem();
 

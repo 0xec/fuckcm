@@ -49,8 +49,6 @@ public class fuckcmServices extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 
-		Log.d(Common.TAG, "service on Start");
-
 		try {
 
 			// 如果保存的状态是停止，则停止服务
@@ -64,8 +62,10 @@ public class fuckcmServices extends Service {
 			
 			if (isRuning) {
 				
-				Stop();
+				return;
 			}
+			
+			Log.d(Common.TAG, "service on Start");
 			
 			EnableIPForward();
 
@@ -103,7 +103,7 @@ public class fuckcmServices extends Service {
 			dnsService.start();
 
 			// 启动IP转向
-			// Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
+			Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
 			CleanIPTablesRules();
 			SetIPTablesRules();
 
@@ -207,15 +207,22 @@ public class fuckcmServices extends Service {
 	 */
 	public void PostNotificationMessage(int Icon, String Title, String Message) {
 
-		NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification note = new Notification(Icon, Message,
-				System.currentTimeMillis());
+		try {
+		
+			NotificationManager notifiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+			Notification note = new Notification(Icon, Message,
+					System.currentTimeMillis());
 
-		// note.flags = Notification.FLAG_ONGOING_EVENT;
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, mainActivity.class), 0);
-		note.setLatestEventInfo(this, Title, Message, pendingIntent);
-		notifiManager.notify(0, note);
+			// note.flags = Notification.FLAG_ONGOING_EVENT;
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+					new Intent(this, mainActivity.class), 0);
+			note.setLatestEventInfo(this, Title, Message, pendingIntent);
+			notifiManager.notify(0, note);
+			
+		} catch (Exception e) {
+
+			Log.e(Common.TAG, "PostNotificationMessage error", e);
+		}
 	}
 
 	/**

@@ -15,13 +15,14 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 
 		String apnNameString = Common.getAPNName(context);
-		Log.d(Common.TAG, "change:" + apnNameString);
 		
 		if (apnNameString.equals("cmwap")) {
 			
+	//		Log.d(Common.TAG, "broadcast receiver start");
 			new RunThread(context, true).start();
 		} else {
 			
+			Log.d(Common.TAG, "broadcast receiver stop");
 			new RunThread(context, false).start();
 		}
 	}

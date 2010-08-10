@@ -31,7 +31,7 @@ public class Common {
 	public static String disableIPForward = "echo 0 > /proc/sys/net/ipv4/ip_forward";
 	public static String ipTable_command[] = {
 			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! " + SERVICE_PORT + " -j LOG --log-level info --log-prefix \"fuckCM \"",
-			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! " + SERVICE_PORT + " -j DNAT  --to-destination 127.0.0.1:58866",
+			"iptables -t nat -A OUTPUT  -o rmnet0  -p tcp -m multiport --destination ! 10.0.0.0/8 --destination-port ! " + SERVICE_PORT + " -j DNAT  --to-destination 127.0.0.1:" + SERVICE_PORT,
 			"iptables -t nat -A OUTPUT  -o rmnet0  -p udp --dport 53  -j DNAT  --to-destination 127.0.0.1:" + SERVICE_DNSPORT };
 
 	public static String cleanIPTables = "iptables -F -t nat";

@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,11 +27,24 @@ public class TunnelSocket extends Thread {
 
 	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
+	
+	Timer timer = new Timer();
+	TimerTask timerTask = new TimerTask() {
+		
+		@Override
+		public void run() {
+
+			//	设置一个不存在的端口，清空日志，并将已存在的写入HASH表
+			getTarget("99999");
+		}
+	};
 
 	public TunnelSocket(ServerSocket srvSkt) {
 
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
+		
+		timer.schedule(timerTask, 3000);
 	}
 
 	@Override
@@ -55,7 +70,7 @@ public class TunnelSocket extends Thread {
 				Log.d(Common.TAG, "Find Remote Address...");
 
 				// 查找原始的目标IP地址
-				dstHost = getTarget(Integer.toString(srcPort));
+				dstHost = getTarget(Integer.toString(srcPort).trim());
 
 				if (dstHost == null || dstHost.trim().equals("")) {
 
@@ -134,13 +149,13 @@ public class TunnelSocket extends Thread {
 
 				boolean match = false;
 				
-				Log.d(Common.TAG, line);
+				Log.d("logs", line);
 
 				if (line.contains("fuckCM")) {
 
 					// Log.d(Common.TAG, line);
 
-					String addr = "", destPort = "";
+					String addr = "", destPort = "", srcPort = "";
 					String[] parmArr = line.split(" ");
 					for (String parm : parmArr) {
 						String trimParm = parm.trim();
@@ -149,7 +164,9 @@ public class TunnelSocket extends Thread {
 						}
 
 						if (trimParm.startsWith("SPT")) {
-							if (sourcePort.equals(getValue(trimParm)))
+							
+							srcPort = getValue(trimParm);
+							if (sourcePort.equals(srcPort))
 								match = true;
 						}
 
@@ -169,13 +186,13 @@ public class TunnelSocket extends Thread {
 
 					} else {
 
-						if (addr.length() > 0 && destPort.length() > 0) {
+						if (addr.length() > 0 && destPort.length() > 0 && srcPort.length() > 0) {
 
 							String strAddr = addr + ":" + destPort;
 
-							if (!connReq.contains(sourcePort)) {
+							if (!connReq.contains(srcPort)) {
 								
-								connReq.put(sourcePort, strAddr);
+								connReq.put(srcPort, strAddr);
 
 								Log.w(Common.TAG, "put in cache key:"
 										+ sourcePort + " value:" + strAddr);
