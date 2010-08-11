@@ -50,12 +50,12 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 			Intent intent0 = new Intent(this.context, fuckcmServices.class);
 			if (this.bRun) {
 
-				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_RUNING);
+				intent0.putExtra("action", Common.SERVICE_RUNING);
 				context.startService(intent0);
 			} else {
 
-				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
-				context.stopService(intent0);
+				intent0.putExtra("action", Common.SERVICE_STOPPED);
+				context.startService(intent0);
 			}
 		}
 	}

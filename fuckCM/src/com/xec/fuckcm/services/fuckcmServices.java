@@ -8,13 +8,13 @@ import com.xec.fuckcm.Config;
 import com.xec.fuckcm.R;
 import com.xec.fuckcm.mainActivity;
 import com.xec.fuckcm.common.Common;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -46,16 +46,21 @@ public class fuckcmServices extends Service {
 
 	@Override
 	public void onStart(Intent intent, int startId) {
+		
+		Boolean ret = false;
 
 		try {
 
 			// 如果保存的状态是停止，则停止服务
-			int status = preConfig.getInt(Common.ServiceStatus,
-					Common.SERVICE_STOPPED);
-			if (status == Common.SERVICE_STOPPED && isRuning) {
-
-				Stop();
-				return;
+			Bundle bundle = intent.getExtras();
+			if (bundle != null) {
+				
+				int status = bundle.getInt("action");
+				if (status == Common.SERVICE_STOPPED && isRuning) {
+	
+					Stop();
+					return;
+				}
 			}
 
 			if (isRuning) {
@@ -65,9 +70,17 @@ public class fuckcmServices extends Service {
 
 			Log.d(Common.TAG, "service on Start");
 
-			MountFileSystem();
+			ret = MountFileSystem();
+			if (!ret) {
+				Exception myException = new Exception("Mount File System Error");
+				throw myException;
+			}
 
-			EnableIPForward();
+			ret = EnableIPForward();
+			if (!ret) {
+				Exception myException = new Exception("Enable IP Forwad Error");
+				throw myException;
+			}
 
 			// 如果套接字已存在，则关闭套接字
 			if (tunnelSocket != null)
@@ -103,9 +116,18 @@ public class fuckcmServices extends Service {
 			dnsService.start();
 
 			// 启动IP转向
-			Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
-			CleanIPTablesRules();
-			SetIPTablesRules();
+	//		Common.rootCMD("dmesg -c"); // 清空记录，以便提高查找时的速度
+			ret = CleanIPTablesRules();
+			if (!ret) {
+				Exception myException = new Exception("Reset iptables Error");
+				throw myException;
+			}
+			
+			ret = SetIPTablesRules();
+			if (!ret) {
+				Exception myException = new Exception("Set iptables rules Error");
+				throw myException;
+			}
 
 			Log.i(Common.TAG, "Service Started...");
 
@@ -118,10 +140,10 @@ public class fuckcmServices extends Service {
 
 		} catch (IOException e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Error", e);
-			PostUIMessage(getString(R.string.START_EXCEPTION));
+			PostUIMessage(e.getMessage());
 		} catch (Exception e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Exception", e);
-			PostUIMessage(getString(R.string.START_EXCEPTION));
+			PostUIMessage(e.getMessage());
 		}
 	}
 
@@ -133,38 +155,46 @@ public class fuckcmServices extends Service {
 	}
 
 	// 打开Ipforward
-	public void EnableIPForward() {
+	public Boolean EnableIPForward() {
 
-		Common.rootCMD(Common.enableIPForward);
+		return (0 == Common.rootCMD(Common.enableIPForward));
 	}
 
 	// 关闭IpForward
-	public void DisableIPForward() {
+	public Boolean DisableIPForward() {
 
-		Common.rootCMD(Common.disableIPForward);
+		return (0 == Common.rootCMD(Common.disableIPForward));
 	}
 
 	// 设置 IPTables
-	public void SetIPTablesRules() {
+	public Boolean SetIPTablesRules() {
 
 		Log.d(Common.TAG, "set ip tables");
 
 		for (String rule : Common.ipTable_command) {
 			try {
-				Common.rootCMD(rule);
+				int ret = Common.rootCMD(rule);
+				if (ret != 0)
+					return false;			
+				
 				Common.testSleep(500);
 
 			} catch (Exception e) {
 				Log.e(Common.TAG, e.getLocalizedMessage());
 			}
 		}
+		
+		return true;
 	}
 
 	// 清空IPTables规则
-	public void CleanIPTablesRules() {
+	public Boolean CleanIPTablesRules() {
 
 		Log.d(Common.TAG, "clean ip tables");
-		Common.rootCMD(Common.cleanIPTables);
+		if (0 != Common.rootCMD(Common.cleanIPTables))
+			return false;
+		else
+			return true;
 	}
 
 	public void Stop() {
@@ -180,8 +210,6 @@ public class fuckcmServices extends Service {
 		// 关闭套接字服务
 		tunnelSocket.CloseAll();
 		dnsService.CloseAll();
-
-		preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
 
 		Log.i(Common.TAG, "Service Stop Success");
 		PostUIMessage(getString(R.string.STOP_SUCCESS));
@@ -240,17 +268,27 @@ public class fuckcmServices extends Service {
 		notifiManager.cancel(0);
 	}
 
-	public void MountFileSystem() {
+	public Boolean MountFileSystem() {
 
 		Common.rootCMD("mkdir /sdcard/fuckcm_etc");
 		Common.testSleep(1000);
-		Common.rootCMD("mount /system/etc /sdcard/fuckcm_etc");
+		int ret = Common.rootCMD("mount /system/etc /sdcard/fuckcm_etc");
+		if (ret != 0)
+			return false;
 		Common.testSleep(1000);
-		Common.rootCMD("mount -o rw,remount /sdcard/fuckcm_etc");
+		ret = Common.rootCMD("mount -o rw,remount /sdcard/fuckcm_etc");
+		if (ret != 0)
+			return false;
+		
+		return true;
 	}
 
-	public void UnmountFileSystem() {
+	public Boolean UnmountFileSystem() {
 
-		Common.rootCMD("umount /sdcard/fuckcm_etc");
+		int ret = Common.rootCMD("umount /sdcard/fuckcm_etc");
+		if (ret != 0)
+			return false;
+		else
+			return true;
 	}
 }

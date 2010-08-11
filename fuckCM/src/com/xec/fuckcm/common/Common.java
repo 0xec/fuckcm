@@ -54,7 +54,7 @@ public class Common {
 	/*
 	 * 公用函数
 	 */
-	public static synchronized void rootCMD(String cmd) {
+	public static synchronized int rootCMD(String cmd) {
 		int result = -1;
 		DataOutputStream os = null;
 		InputStream err = null;
@@ -103,8 +103,9 @@ public class Common {
 				}
 			} catch (IOException e) {
 			}
-
 		}
+		
+		return result;
 	}
 
 	/**
