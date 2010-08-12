@@ -325,7 +325,9 @@ public class DNSService extends Thread {
 	public void CloseAll() {
 
 		isRuning = false;
-		socket.close();
+
+		if (!socket.isClosed())
+			socket.close();
 	}
 
 	public void SaveToHosts(String domain, String ip) {

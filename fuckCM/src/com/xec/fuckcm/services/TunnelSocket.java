@@ -196,7 +196,7 @@ public class TunnelSocket extends Thread {
 								connReq.put(srcPort, strAddr);
 
 								Log.w(Common.TAG, "put in cache key:"
-										+ sourcePort + " value:" + strAddr);
+										+ srcPort + " value:" + strAddr);
 
 							}
 						}
@@ -240,7 +240,9 @@ public class TunnelSocket extends Thread {
 		try {
 			isRuning = false;
 			tunnelPool.shutdownNow();
-			srvTunnelSocket.close();
+
+			if (!srvTunnelSocket.isClosed())
+				srvTunnelSocket.close();
 
 			timer.cancel();
 

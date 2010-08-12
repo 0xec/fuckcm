@@ -59,7 +59,7 @@ public class fuckcmServices extends Service {
 			}
 
 			if (status == Common.SERVICE_RUNING) {
-				
+
 				if (isRuning)
 					return;
 
@@ -175,6 +175,7 @@ public class fuckcmServices extends Service {
 
 	public Boolean MountFileSystem() {
 
+		Common.rootCMD("rmdir /sdcard/fuckcm_etc");
 		Common.rootCMD("mkdir /sdcard/fuckcm_etc");
 		Common.testSleep(1000);
 		int ret = Common.rootCMD("mount /system/etc /sdcard/fuckcm_etc");
@@ -182,8 +183,11 @@ public class fuckcmServices extends Service {
 			return false;
 		Common.testSleep(1000);
 		ret = Common.rootCMD("mount -o rw,remount /sdcard/fuckcm_etc");
-		if (ret != 0)
-			return false;
+		if (ret != 0) {
+			ret = Common.rootCMD("mount -o rw,remount /mnt/sdcard/fuckcm_etc");
+			if (ret != 0)
+				return false;
+		}
 
 		return true;
 	}
@@ -191,10 +195,18 @@ public class fuckcmServices extends Service {
 	public Boolean UnmountFileSystem() {
 
 		int ret = Common.rootCMD("umount /sdcard/fuckcm_etc");
-		if (ret != 0)
-			return false;
-		else
+		if (ret == 0)
 			return true;
+		
+		ret = Common.rootCMD("umount /mnt/sdcard/fuckcm_etc");
+		if (ret == 0)
+			return true;
+		
+		ret = Common.rootCMD("rmdir /sdcard/fuckcm_etc");
+		if (ret == 0)
+			return true;
+		
+		return false;
 	}
 
 	/**
@@ -202,20 +214,17 @@ public class fuckcmServices extends Service {
 	 */
 	public Boolean fuckcmStartService() {
 
-		Boolean ret = false;
+		Boolean mountBoolean = false;
+		Boolean ipRulesBoolean = false;
 
 		try {
 
 			// 挂载目录
-			ret = MountFileSystem();
-			if (!ret) {
-				Exception myException = new Exception("Mount File System Error");
-				throw myException;
-			}
+			mountBoolean = MountFileSystem();
 
 			// 打开IPForwad选项
-			ret = EnableIPForward();
-			if (!ret) {
+			ipRulesBoolean = EnableIPForward();
+			if (!ipRulesBoolean) {
 				Exception myException = new Exception("Enable IP Forwad Error");
 				throw myException;
 			}
@@ -247,21 +256,26 @@ public class fuckcmServices extends Service {
 			/*
 			 * DNS服务
 			 */
-			srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
+			if (mountBoolean) {
+				srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
 
-			dnsService = new DNSService(srvDNSSocket);
-			dnsService.start();
+				dnsService = new DNSService(srvDNSSocket);
+				dnsService.start();
+			} else {
+				
+				
+			}
 
 			// 清除规则
-			ret = CleanIPTablesRules();
-			if (!ret) {
+			ipRulesBoolean = CleanIPTablesRules();
+			if (!ipRulesBoolean) {
 				Exception myException = new Exception("Reset iptables Error");
 				throw myException;
 			}
 
 			// 设置规则
-			ret = SetIPTablesRules();
-			if (!ret) {
+			ipRulesBoolean = SetIPTablesRules();
+			if (!ipRulesBoolean) {
 				Exception myException = new Exception(
 						"Set iptables rules Error");
 				throw myException;
@@ -275,7 +289,7 @@ public class fuckcmServices extends Service {
 					getString(R.string.START_SUCCESS));
 
 			isRuning = true;
-			ret = true;
+			ipRulesBoolean = true;
 
 		} catch (Exception e) {
 
@@ -283,7 +297,7 @@ public class fuckcmServices extends Service {
 			PostUIMessage(e.getMessage());
 		}
 
-		return ret;
+		return ipRulesBoolean;
 
 	}
 
@@ -291,21 +305,36 @@ public class fuckcmServices extends Service {
 
 		Log.d(Common.TAG, "Service Stop entry");
 
-		UnmountFileSystem();
+		try {
 
-		// 关闭IP转向
-		CleanIPTablesRules(); // 清除规则
-		DisableIPForward(); // 关闭IpForward
+			UnmountFileSystem();
 
-		// 关闭套接字服务
-		tunnelSocket.CloseAll();
-		dnsService.CloseAll();
+			// 关闭IP转向
+			CleanIPTablesRules(); // 清除规则
+			DisableIPForward(); // 关闭IpForward
 
-		Log.i(Common.TAG, "Service Stop Success");
-		PostUIMessage(getString(R.string.STOP_SUCCESS));
-		CleanNotificationMessage();
+			// 关闭套接字服务
+			try {
+				tunnelSocket.CloseAll();
+			} catch (Exception e) {
+			}
 
-		isRuning = false;
+			try {
+				dnsService.CloseAll();
+			} catch (Exception e) {
+			}
+
+		} catch (Exception e) {
+
+			Log.e(Common.TAG, "close exception", e);
+		} finally {
+
+			Log.i(Common.TAG, "Service Stop Success");
+			PostUIMessage(getString(R.string.STOP_SUCCESS));
+			CleanNotificationMessage();
+
+			isRuning = false;
+		}
 
 	}
 }

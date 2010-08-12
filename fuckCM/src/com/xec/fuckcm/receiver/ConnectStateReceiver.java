@@ -22,8 +22,8 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 			return;
 
 		String apnNameString = Common.getAPNName(context);
-		
-		Log.d(Common.TAG, "recv apn name:"+ apnNameString);
+
+		Log.d(Common.TAG, "recv apn name:" + apnNameString);
 
 		if (apnNameString.equals("cmwap")) {
 
