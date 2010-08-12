@@ -125,9 +125,9 @@ public class TunnelSocket extends Thread {
 
 			os = new DataOutputStream(process.getOutputStream());
 
-			os.writeBytes(command + "\n");
+			os.writeBytes(command + " \n");
 			os.flush();
-			os.writeBytes("exit\n");
+			os.writeBytes("exit \n");
 			os.flush();
 
 			int execResult = process.waitFor();
