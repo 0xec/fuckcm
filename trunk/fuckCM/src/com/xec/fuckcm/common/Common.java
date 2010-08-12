@@ -59,7 +59,7 @@ public class Common {
 		DataOutputStream os = null;
 		InputStream err = null;
 		try {
-			
+
 			Process process = Runtime.getRuntime().exec("su");
 			err = process.getErrorStream();
 			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
@@ -105,7 +105,7 @@ public class Common {
 			} catch (IOException e) {
 			}
 		}
-		
+
 		return result;
 	}
 
