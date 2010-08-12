@@ -59,6 +59,7 @@ public class Common {
 		DataOutputStream os = null;
 		InputStream err = null;
 		try {
+			
 			Process process = Runtime.getRuntime().exec("su");
 			err = process.getErrorStream();
 			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
@@ -66,9 +67,9 @@ public class Common {
 
 			os = new DataOutputStream(process.getOutputStream());
 
-			os.writeBytes(cmd + "\n");
+			os.writeBytes(cmd + " \n");
 			os.flush();
-			os.writeBytes("exit\n");
+			os.writeBytes("exit \n");
 			os.flush();
 
 			String resp;

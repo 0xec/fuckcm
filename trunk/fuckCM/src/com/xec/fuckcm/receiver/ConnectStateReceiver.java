@@ -22,6 +22,8 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 			return;
 
 		String apnNameString = Common.getAPNName(context);
+		
+		Log.d(Common.TAG, "recv apn name:"+ apnNameString);
 
 		if (apnNameString.equals("cmwap")) {
 
@@ -36,12 +38,10 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 
 	class RunThread extends Thread {
 		public Context context = null;
-		public Config preConfig = null;
 		public Boolean bRun = false;
 
 		public RunThread(Context ctx, Boolean bRun) {
 			this.context = ctx;
-			preConfig = new Config(ctx);
 			this.bRun = bRun;
 		}
 
