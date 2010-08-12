@@ -115,12 +115,20 @@ public class mainActivity extends Activity implements OnClickListener {
 			if (runBtn.isChecked()) {
 
 				PostUIMessage(getString(R.string.PRE_START_SERVICE));
+				
+				//	保存状态，当recv接收到消息时候确定是运行还是不做任何操作
 				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_RUNING);
+			
+				//	控制服务的状态
+				intent0.putExtra("action", Common.SERVICE_RUNING);
+				
 				startService(intent0);
 			} else {
 
 				PostUIMessage(getString(R.string.PRE_STOP_SERVICE));
 				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
+			
+				intent0.putExtra("action", Common.SERVICE_STOPPED);
 				stopService(intent0);
 			}
 			break;
