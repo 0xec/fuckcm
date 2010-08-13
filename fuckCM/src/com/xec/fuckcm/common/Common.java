@@ -108,6 +108,71 @@ public class Common {
 
 		return result;
 	}
+	
+	public static synchronized int runCMD(String cmd, String param) {
+		int result = -1;
+		DataOutputStream os = null;
+		InputStream err = null;
+		try {
+
+			Process process = Runtime.getRuntime().exec(cmd);
+			err = process.getErrorStream();
+			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
+					1024 * 8);
+
+			os = new DataOutputStream(process.getOutputStream());
+
+			os.writeBytes(" " + param + "\n");
+			os.flush();
+			os.writeBytes("exit \n");
+			os.flush();
+
+			String resp;
+			while ((resp = bre.readLine()) != null) {
+
+				if (resp.equals(""))
+					break;
+
+				Log.e(TAG, resp);
+			}
+			
+			InputStream out = process.getInputStream();
+			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
+			String line = "";
+
+			// 根据输出构建以源端口为key的地址表
+			while ((line = outR.readLine()) != null) {
+				
+				Log.d(Common.TAG, line);
+			}
+
+			result = process.waitFor();
+			if (result == 0)
+				Log.d(TAG, "normal " +  cmd + " exec success");
+			else {
+				Log.d(TAG, "normal " +  cmd + " exec with result " + result);
+			}
+
+			os.close();
+			process.destroy();
+
+		} catch (IOException e) {
+
+			Log.e(TAG, "Failed to exec normal command", e);
+		} catch (InterruptedException e) {
+
+			Log.e(TAG, "Thread Exception error", e);
+		} finally {
+			try {
+				if (os != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+			}
+		}
+
+		return result;
+	}
 
 	/**
 	 * 延时函数

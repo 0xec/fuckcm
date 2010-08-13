@@ -175,12 +175,14 @@ public class fuckcmServices extends Service {
 
 	public Boolean MountFileSystem() {
 
-		Common.rootCMD("rmdir /sdcard/fuckcm_etc");
-		Common.rootCMD("mkdir /sdcard/fuckcm_etc");
+		Common.runCMD("rmdir", "/sdcard/fuckcm_etc");
+		Common.runCMD("mkdir", "/sdcard/fuckcm_etc");
+		
 		Common.testSleep(1000);
 		int ret = Common.rootCMD("mount /system/etc /sdcard/fuckcm_etc");
 		if (ret != 0)
 			return false;
+		
 		Common.testSleep(1000);
 		ret = Common.rootCMD("mount -o rw,remount /sdcard/fuckcm_etc");
 		if (ret != 0) {
@@ -202,7 +204,8 @@ public class fuckcmServices extends Service {
 		if (ret == 0)
 			return true;
 		
-		ret = Common.rootCMD("rmdir /sdcard/fuckcm_etc");
+	//	ret = Common.rootCMD("rmdir /sdcard/fuckcm_etc");
+		ret = Common.runCMD("rmdir", "/sdcard/fuckcm_etc");
 		if (ret == 0)
 			return true;
 		
