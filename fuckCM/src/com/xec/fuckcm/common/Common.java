@@ -107,7 +107,7 @@ public class Common {
 
 		return result;
 	}
-	
+
 	public static synchronized int runCMD(String cmd, String param) {
 		int result = -1;
 		DataOutputStream os = null;
@@ -134,22 +134,22 @@ public class Common {
 
 				Log.e(TAG, resp);
 			}
-			
+
 			InputStream out = process.getInputStream();
 			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
 			String line = "";
 
 			// 根据输出构建以源端口为key的地址表
 			while ((line = outR.readLine()) != null) {
-				
+
 				Log.d(Common.TAG, line);
 			}
 
 			result = process.waitFor();
 			if (result == 0)
-				Log.d(TAG, "normal " +  cmd + " exec success");
+				Log.d(TAG, "normal " + cmd + " exec success");
 			else {
-				Log.d(TAG, "normal " +  cmd + " exec with result " + result);
+				Log.d(TAG, "normal " + cmd + " exec with result " + result);
 			}
 
 			os.close();
@@ -172,7 +172,7 @@ public class Common {
 
 		return result;
 	}
-	
+
 	public static synchronized BufferedReader Rundmesg(String cmd, String param) {
 		DataOutputStream os = null;
 		InputStream err = null;
@@ -198,7 +198,7 @@ public class Common {
 
 				Log.e(TAG, resp);
 			}
-			
+
 			InputStream out = process.getInputStream();
 			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
 
@@ -206,14 +206,14 @@ public class Common {
 
 			int result = process.waitFor();
 			if (result == 0) {
-				Log.d(TAG, "normal " +  cmd + " exec success");
+				Log.d(TAG, "normal " + cmd + " exec success");
 			} else {
-				Log.d(TAG, "normal " +  cmd + " exec with result " + result);
+				Log.d(TAG, "normal " + cmd + " exec with result " + result);
 			}
 
 			os.close();
 			process.destroy();
-			
+
 			return outR;
 
 		} catch (IOException e) {
