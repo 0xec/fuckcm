@@ -122,11 +122,11 @@ public class TunnelSocket extends Thread {
 		DataOutputStream os = null;
 		InputStream out = null;
 		try {
-			Process process = Runtime.getRuntime().exec("su");
+			Process process = Runtime.getRuntime().exec("dmesg");
 
 			os = new DataOutputStream(process.getOutputStream());
 
-			os.writeBytes(command + " \n");
+			os.writeBytes(" -c \n");
 			os.flush();
 			os.writeBytes("exit \n");
 			os.flush();
