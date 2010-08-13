@@ -44,7 +44,8 @@ public class TunnelSocket extends Thread {
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
 
-		timer.schedule(timerTask, 10000, 10000);
+		//	root权限执行命令时会造成焦点的切换，貌似是android的问题
+	//	timer.schedule(timerTask, 10000, 10000);
 	}
 
 	@Override
