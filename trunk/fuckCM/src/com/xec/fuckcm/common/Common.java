@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -175,14 +177,9 @@ public class Common {
 
 	public static synchronized BufferedReader Rundmesg(String cmd, String param) {
 		DataOutputStream os = null;
-		InputStream err = null;
 		try {
 
 			Process process = Runtime.getRuntime().exec(cmd);
-			err = process.getErrorStream();
-			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
-					1024 * 8);
-
 			os = new DataOutputStream(process.getOutputStream());
 
 			os.writeBytes(" " + param + "\n");
@@ -190,17 +187,27 @@ public class Common {
 			os.writeBytes("exit \n");
 			os.flush();
 
-			String resp;
-			while ((resp = bre.readLine()) != null) {
-
-				if (resp.equals(""))
-					break;
-
-				Log.e(TAG, resp);
-			}
-
 			InputStream out = process.getInputStream();
 			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
+			
+			class MyTimerTask extends TimerTask {
+				
+				public Process process;
+				
+				public MyTimerTask(Process proce) {
+					this.process = proce;
+				}
+				
+				public void run() {
+					
+					Log.w(TAG, "Abort Process Run");
+					process.destroy();
+				}
+			}
+			
+			Timer timer = new Timer();
+			MyTimerTask myTimerTask = new MyTimerTask(process);
+			timer.schedule(myTimerTask, 10000);
 
 			// 根据输出构建以源端口为key的地址表
 
@@ -210,6 +217,8 @@ public class Common {
 			} else {
 				Log.d(TAG, "normal " + cmd + " exec with result " + result);
 			}
+			
+			timer.cancel();
 
 			os.close();
 			process.destroy();
@@ -227,8 +236,7 @@ public class Common {
 				if (os != null) {
 					os.close();
 				}
-			} catch (IOException e) {
-			}
+			} catch (IOException e) {}
 		}
 
 		return null;
