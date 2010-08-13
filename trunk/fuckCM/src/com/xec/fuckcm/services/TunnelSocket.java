@@ -22,13 +22,13 @@ public class TunnelSocket extends Thread {
 
 	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
-	
+
 	public TunnelSocket(ServerSocket srvSkt) {
 
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
 
-		//	root权限执行命令时会造成焦点的切换，貌似是android的问题
+		// root权限执行命令时会造成焦点的切换，貌似是android的问题
 	}
 
 	@Override
@@ -98,14 +98,13 @@ public class TunnelSocket extends Thread {
 
 			return result;
 		}
-		
-		try
-		{
+
+		try {
 			BufferedReader outR = Common.Rundmesg("dmesg", "-c");
 
 			if (outR == null)
 				return null;
-				
+
 			String line = "";
 			// 根据输出构建以源端口为key的地址表
 			while ((line = outR.readLine()) != null) {
@@ -161,8 +160,8 @@ public class TunnelSocket extends Thread {
 
 								connReq.put(srcPort, strAddr);
 
-								Log.w(Common.TAG, "put in cache key:"
-										+ srcPort + " value:" + strAddr);
+								Log.w(Common.TAG, "put in cache key:" + srcPort
+										+ " value:" + strAddr);
 
 							}
 						}
@@ -170,7 +169,7 @@ public class TunnelSocket extends Thread {
 
 				} // end if
 			} // end while
-			
+
 			outR.close();
 
 		} catch (IOException e) {

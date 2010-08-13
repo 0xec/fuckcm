@@ -51,7 +51,7 @@ public class fuckcmServices extends Service {
 				status = bundle.getInt("action");
 
 			if (status == Common.SERVICE_STOPPED) {
-				
+
 				if (isRuning)
 					fuckcmStopService();
 
@@ -78,7 +78,7 @@ public class fuckcmServices extends Service {
 	public void onDestroy() {
 
 		fuckcmStopService();
-	//	UnmountFileSystem();
+		// UnmountFileSystem();
 	}
 
 	// 打开Ipforward
@@ -104,7 +104,7 @@ public class fuckcmServices extends Service {
 				if (ret != 0)
 					return false;
 
-			//	Common.testSleep(500);
+				// Common.testSleep(500);
 
 			} catch (Exception e) {
 				Log.e(Common.TAG, e.getLocalizedMessage());
@@ -177,19 +177,22 @@ public class fuckcmServices extends Service {
 
 		Common.runCMD("busybox rmdir /sdcard/fuckcm_etc", "");
 		Common.runCMD("busybox mkdir /sdcard/fuckcm_etc", "");
-		
-	//	Common.testSleep(1000);
-		int ret = Common.rootCMD("busybox mount /system/etc /sdcard/fuckcm_etc");
+
+		// Common.testSleep(1000);
+		int ret = Common
+				.rootCMD("busybox mount /system/etc /sdcard/fuckcm_etc");
 		if (ret != 0) {
-			ret = Common.rootCMD("busybox mount /system/etc /mnt/sdcard/fuckcm_etc");
+			ret = Common
+					.rootCMD("busybox mount /system/etc /mnt/sdcard/fuckcm_etc");
 			if (ret != 0)
-				return false;			
+				return false;
 		}
-		
-	//	Common.testSleep(1000);
+
+		// Common.testSleep(1000);
 		ret = Common.rootCMD("busybox mount -o rw,remount /sdcard/fuckcm_etc");
 		if (ret != 0) {
-			ret = Common.rootCMD("busybox mount -o rw,remount /mnt/sdcard/fuckcm_etc");
+			ret = Common
+					.rootCMD("busybox mount -o rw,remount /mnt/sdcard/fuckcm_etc");
 			if (ret != 0)
 				return false;
 		}
@@ -205,12 +208,12 @@ public class fuckcmServices extends Service {
 			if (ret != 0)
 				return false;
 		}
-			
-	//	ret = Common.rootCMD("rmdir /sdcard/fuckcm_etc");
+
+		// ret = Common.rootCMD("rmdir /sdcard/fuckcm_etc");
 		ret = Common.runCMD("busybox rmdir /sdcard/fuckcm_etc", "");
 		if (ret != 0)
 			return false;
-		
+
 		return true;
 	}
 
@@ -267,8 +270,7 @@ public class fuckcmServices extends Service {
 				dnsService = new DNSService(srvDNSSocket);
 				dnsService.start();
 			} else {
-				
-				
+
 			}
 
 			// 清除规则
@@ -328,7 +330,7 @@ public class fuckcmServices extends Service {
 				dnsService.CloseAll();
 			} catch (Exception e) {
 			}
-			
+
 			isRuning = false;
 
 		} catch (Exception e) {
