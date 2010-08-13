@@ -129,7 +129,7 @@ public class mainActivity extends Activity implements OnClickListener {
 				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
 
 				intent0.putExtra("action", Common.SERVICE_STOPPED);
-				stopService(intent0);
+				startService(intent0);
 			}
 			break;
 

@@ -1,15 +1,10 @@
 package com.xec.fuckcm.services;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,25 +22,13 @@ public class TunnelSocket extends Thread {
 
 	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
-
-	Timer timer = new Timer();
-	TimerTask timerTask = new TimerTask() {
-
-		@Override
-		public void run() {
-
-			// 设置一个不存在的端口，清空日志，并将已存在的写入HASH表
-			getTarget("99999");
-		}
-	};
-
+	
 	public TunnelSocket(ServerSocket srvSkt) {
 
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
 
 		//	root权限执行命令时会造成焦点的切换，貌似是android的问题
-	//	timer.schedule(timerTask, 10000, 10000);
 	}
 
 	@Override
@@ -84,8 +67,7 @@ public class TunnelSocket extends Thread {
 					Log.d(Common.TAG, srcPort + "-------->" + dstHost);
 
 					//
-					tunnelPool
-							.execute(new ConnectSession(clientSocket, dstHost));
+					tunnelPool.execute(new ConnectSession(clientSocket, dstHost));
 				}
 
 			} catch (IOException e) {
@@ -116,32 +98,15 @@ public class TunnelSocket extends Thread {
 
 			return result;
 		}
+		
+		try
+		{
+			BufferedReader outR = Common.Rundmesg("dmesg", "-c");
 
-		final String command = "dmesg -c";
-
-		DataOutputStream os = null;
-		InputStream out = null;
-		try {
-			Process process = Runtime.getRuntime().exec("dmesg");
-
-			os = new DataOutputStream(process.getOutputStream());
-
-			os.writeBytes(" -c \n");
-			os.flush();
-			os.writeBytes("exit \n");
-			os.flush();
-
-			int execResult = process.waitFor();
-			if (execResult == 0)
-				Log.d(Common.TAG, command + " exec success");
-			else {
-				Log.d(Common.TAG, command + " exec with result " + execResult);
-			}
-
-			out = process.getInputStream();
-			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
+			if (outR == null)
+				return null;
+				
 			String line = "";
-
 			// 根据输出构建以源端口为key的地址表
 			while ((line = outR.readLine()) != null) {
 
@@ -205,23 +170,12 @@ public class TunnelSocket extends Thread {
 
 				} // end if
 			} // end while
+			
+			outR.close();
 
-			os.close();
-			process.destroy();
 		} catch (IOException e) {
 			Log.e(Common.TAG, "Failed to exec command", e);
-		} catch (InterruptedException e) {
-			Log.e(Common.TAG, "thread error terminate", e);
-		} finally {
-			try {
-				if (os != null) {
-					os.close();
-				}
-			} catch (IOException e) {
-			}
-
 		}
-
 		return result;
 	}
 
@@ -244,8 +198,6 @@ public class TunnelSocket extends Thread {
 
 			if (!srvTunnelSocket.isClosed())
 				srvTunnelSocket.close();
-
-			timer.cancel();
 
 		} catch (Exception e) {
 			Log.e(Common.TAG, "function CloseAll error", e);
