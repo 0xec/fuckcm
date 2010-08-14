@@ -136,6 +136,7 @@ public class mainActivity extends Activity implements OnClickListener {
 		default:
 			break;
 		}
+
 	}
 
 	/**
@@ -155,18 +156,4 @@ public class mainActivity extends Activity implements OnClickListener {
 			Log.e(Common.TAG, "Post UI Message Error", e);
 		}
 	}
-
-	/*
-	 * @Override public void onDestroy() {
-	 * 
-	 * try {
-	 * 
-	 * if (intentFilter != null && mBroadRecv != null) {
-	 * 
-	 * unregisterReceiver(mBroadRecv); }
-	 * 
-	 * } catch (Exception e) {
-	 * 
-	 * Log.e(Common.TAG, "Unregister Receiver Error", e); } }
-	 */
 }

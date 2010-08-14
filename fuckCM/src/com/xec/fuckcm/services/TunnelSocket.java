@@ -1,10 +1,13 @@
 package com.xec.fuckcm.services;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,13 +25,28 @@ public class TunnelSocket extends Thread {
 
 	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
+	
+	Timer timer = new Timer();
+	TimerTask timerTask = new TimerTask() {
+		
+		@Override
+		public void run() {
 
+			//	10秒清除一次HASH表
+			Log.d(Common.TAG, "clear hash table");
+			connReq.clear();
+		}
+	};
+
+	/**
+	 * 构造函数
+	 */
 	public TunnelSocket(ServerSocket srvSkt) {
 
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
 
-		// root权限执行命令时会造成焦点的切换，貌似是android的问题
+		timer.schedule(timerTask, 10000, 10000);
 	}
 
 	@Override
@@ -67,7 +85,8 @@ public class TunnelSocket extends Thread {
 					Log.d(Common.TAG, srcPort + "-------->" + dstHost);
 
 					//
-					tunnelPool.execute(new ConnectSession(clientSocket, dstHost));
+					tunnelPool
+							.execute(new ConnectSession(clientSocket, dstHost));
 				}
 
 			} catch (IOException e) {
@@ -100,14 +119,19 @@ public class TunnelSocket extends Thread {
 		}
 
 		try {
-			BufferedReader outR = Common.Rundmesg("dmesg", "-c");
+	//		BufferedReader outR = Common.Rundmesg("dmesg", "-c");
+			ArrayList<String> strReader = new ArrayList<String>();
+			Getdmesg(strReader);
 
-			if (outR == null)
-				return null;
+	//		if (outR == null)
+	//			return null;
 
 			String line = "";
 			// 根据输出构建以源端口为key的地址表
-			while ((line = outR.readLine()) != null) {
+			//while ((line = outR.readLine()) != null) {
+			for (int i = 0; i < strReader.size(); i++) {
+				
+				line = strReader.get(i);			
 
 				if (line.equals(""))
 					break;
@@ -168,11 +192,9 @@ public class TunnelSocket extends Thread {
 					}
 
 				} // end if
-			} // end while
+			} // end for
 
-			outR.close();
-
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Log.e(Common.TAG, "Failed to exec command", e);
 		}
 		return result;
@@ -201,5 +223,34 @@ public class TunnelSocket extends Thread {
 		} catch (Exception e) {
 			Log.e(Common.TAG, "function CloseAll error", e);
 		}
+	}
+
+	public static synchronized int Getdmesg(ArrayList<String> strReader) {
+		int result = -1;
+		ArrayList<String> strError = new ArrayList<String>();
+		try {
+
+			Process process = Runtime.getRuntime().exec("su");
+			OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream());
+			writer.write("dmesg -c\n");
+			writer.flush();
+			writer.write("exit \n");
+			writer.flush();
+
+			result = Common.doWaitFor(process, strReader, strError, "fuckCM");
+			if (result == 0) {
+				Log.d(Common.TAG, "dmesg exec success");
+			} else {
+				Log.d(Common.TAG, "dmesg exec with result " + result);
+			}
+
+			process.destroy();
+		} catch (InterruptedException ie) {
+			Log.e(Common.TAG, "root command error", ie);
+		} catch (Exception e) {
+			Log.e(Common.TAG, "root command error", e);
+		}
+
+		return result;
 	}
 }
