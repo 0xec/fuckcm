@@ -1,12 +1,10 @@
 package com.xec.fuckcm.common;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -28,6 +26,9 @@ public class Common {
 	// 工作参数
 	public static int SERVICE_PORT = 48966; // 服务端工作端口
 	public static int SERVICE_DNSPORT = 48953; // DNS工作端口
+
+	// 挂载命令
+	public static String remountFileSystem = "busybox mount -o rw,remount /system";
 
 	// IPtables命令
 	public static String enableIPForward = "echo 1 > /proc/sys/net/ipv4/ip_forward";
@@ -57,190 +58,85 @@ public class Common {
 	 */
 	public static synchronized int rootCMD(String cmd) {
 		int result = -1;
-		DataOutputStream os = null;
-		InputStream err = null;
+		ArrayList<String> strReader = new ArrayList<String>();
+		ArrayList<String> strError = new ArrayList<String>();
 		try {
 
 			Process process = Runtime.getRuntime().exec("su");
-			err = process.getErrorStream();
-			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
-					1024 * 8);
+			OutputStreamWriter writer = new OutputStreamWriter(
+					process.getOutputStream());
 
-			os = new DataOutputStream(process.getOutputStream());
+			writer.write(cmd + "\n");
+			writer.write("exit\n");
+			writer.flush();
 
-			os.writeBytes(cmd + " \n");
-			os.flush();
-			os.writeBytes("exit \n");
-			os.flush();
-
-			String resp;
-			while ((resp = bre.readLine()) != null) {
-
-				if (resp.equals(""))
-					break;
-
-				Log.d(TAG, resp);
-			}
-
-			result = process.waitFor();
+			result = doWaitFor(process, strReader, strError, "");
 			if (result == 0)
 				Log.d(TAG, cmd + " exec success");
 			else {
 				Log.d(TAG, cmd + " exec with result " + result);
+				for (int i = 0; i < strError.size(); i++) {
+					Log.w(TAG, strError.get(i));
+				}
 			}
 
-			os.close();
 			process.destroy();
 
-		} catch (IOException e) {
-
-			Log.e(TAG, "Failed to exec command", e);
-		} catch (InterruptedException e) {
-
-			Log.e(TAG, "Thread Exception error", e);
-		} finally {
-			try {
-				if (os != null) {
-					os.close();
-				}
-			} catch (IOException e) {
-			}
+		} catch (Exception e) {
+			Log.e(Common.TAG, "root command error", e);
 		}
 
 		return result;
 	}
 
-	public static synchronized int runCMD(String cmd, String param) {
-		int result = -1;
-		DataOutputStream os = null;
-		InputStream err = null;
-		try {
+	public static synchronized int doWaitFor(Process p,	ArrayList<String> strReader, ArrayList<String> strError, String strFilter)
+			throws Exception {
+		int exitValue = -1; // returned to caller when p is finished
 
-			Process process = Runtime.getRuntime().exec(cmd);
-			err = process.getErrorStream();
-			BufferedReader bre = new BufferedReader(new InputStreamReader(err),
-					1024 * 8);
+		InputStream in = p.getInputStream();
+		InputStream err = p.getErrorStream();
+		boolean finished = false; // Set to true when p is finished
 
-			os = new DataOutputStream(process.getOutputStream());
+		BufferedReader bin = new BufferedReader(new InputStreamReader(in));
+		BufferedReader berror = new BufferedReader(new InputStreamReader(err));
 
-			os.writeBytes(" " + param + "\n");
-			os.flush();
-			os.writeBytes("exit \n");
-			os.flush();
-
-			String resp;
-			while ((resp = bre.readLine()) != null) {
-
-				if (resp.equals(""))
-					break;
-
-				Log.e(TAG, resp);
-			}
-
-			InputStream out = process.getInputStream();
-			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
-			String line = "";
-
-			// 根据输出构建以源端口为key的地址表
-			while ((line = outR.readLine()) != null) {
-
-				Log.d(Common.TAG, line);
-			}
-
-			result = process.waitFor();
-			if (result == 0)
-				Log.d(TAG, "normal " + cmd + " exec success");
-			else {
-				Log.d(TAG, "normal " + cmd + " exec with result " + result);
-			}
-
-			os.close();
-			process.destroy();
-
-		} catch (IOException e) {
-
-			Log.e(TAG, "Failed to exec normal command", e);
-		} catch (InterruptedException e) {
-
-			Log.e(TAG, "Thread Exception error", e);
-		} finally {
+		while (!finished) {
 			try {
-				if (os != null) {
-					os.close();
-				}
-			} catch (IOException e) {
-			}
-		}
-
-		return result;
-	}
-
-	public static synchronized BufferedReader Rundmesg(String cmd, String param) {
-		DataOutputStream os = null;
-		try {
-
-			Process process = Runtime.getRuntime().exec(cmd);
-			os = new DataOutputStream(process.getOutputStream());
-
-			os.writeBytes(" " + param + "\n");
-			os.flush();
-			os.writeBytes("exit \n");
-			os.flush();
-
-			InputStream out = process.getInputStream();
-			BufferedReader outR = new BufferedReader(new InputStreamReader(out));
-			
-			class MyTimerTask extends TimerTask {
-				
-				public Process process;
-				
-				public MyTimerTask(Process proce) {
-					this.process = proce;
-				}
-				
-				public void run() {
+				while (bin.ready()) {
+					String strMessage = bin.readLine();
+			//		Log.d(TAG, strMessage);
+					if (strFilter.length() > 0) {
+						
+						if (strMessage.contains(strFilter))
+							strReader.add(strMessage);
+						
+					} else {
+						
+						strReader.add(strMessage);
+					}
 					
-					Log.w(TAG, "Abort Process Run");
-					process.destroy();
+					Log.d("logs", strMessage);
 				}
-			}
-			
-			Timer timer = new Timer();
-			MyTimerTask myTimerTask = new MyTimerTask(process);
-			timer.schedule(myTimerTask, 10000);
 
-			// 根据输出构建以源端口为key的地址表
-
-			int result = process.waitFor();
-			if (result == 0) {
-				Log.d(TAG, "normal " + cmd + " exec success");
-			} else {
-				Log.d(TAG, "normal " + cmd + " exec with result " + result);
-			}
-			
-			timer.cancel();
-
-			os.close();
-			process.destroy();
-
-			return outR;
-
-		} catch (IOException e) {
-
-			Log.e(TAG, "Failed to exec normal command", e);
-		} catch (InterruptedException e) {
-
-			Log.e(TAG, "Thread Exception error", e);
-		} finally {
-			try {
-				if (os != null) {
-					os.close();
+				while (berror.ready()) {
+					String strMessage = berror.readLine();
+					Log.e(TAG, strMessage);
+					strError.add(strMessage);
 				}
-			} catch (IOException e) {}
+
+				exitValue = p.exitValue();
+				finished = true;
+			} catch (IllegalThreadStateException e) {
+				testSleep(500);
+			}
 		}
 
-		return null;
-	}
+		bin.close();
+		berror.close();
+		in.close();
+		err.close();
+		return exitValue;
+	}// end of doWaitFor method
 
 	/**
 	 * 延时函数
@@ -280,24 +176,6 @@ public class Common {
 			apnName = networkInfo.getExtraInfo();
 			return apnName;
 		}
-
-		// // 查询 apn 的名字
-		// Cursor cursor =
-		// context.getContentResolver().query(Uri.parse("content://telephony/carriers"),
-		// new String[] {"apn"}, "current=1", null, null);
-		//
-		// if (cursor != null) {
-		//
-		// try {
-		// if (cursor.moveToFirst()) {
-		// apnName = cursor.getString(0);
-		// }
-		// } catch (Exception e) {
-		// Log.e(TAG, "Can not get Network info", e);
-		// } finally {
-		// cursor.close();
-		// }
-		// }
 
 		return apnName;
 

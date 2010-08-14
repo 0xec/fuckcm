@@ -338,7 +338,7 @@ public class DNSService extends Thread {
 
 			String dnsHosts = ip + "\t\t\t" + domain;
 
-			File fe = new File("/sdcard/fuckcm_etc/hosts");
+			File fe = new File("/system/etc/hosts");
 			if (!fe.exists()) {
 				fe.createNewFile();
 			}

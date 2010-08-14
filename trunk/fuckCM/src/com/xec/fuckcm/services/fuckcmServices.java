@@ -78,7 +78,6 @@ public class fuckcmServices extends Service {
 	public void onDestroy() {
 
 		fuckcmStopService();
-		// UnmountFileSystem();
 	}
 
 	// 打开Ipforward
@@ -175,67 +174,24 @@ public class fuckcmServices extends Service {
 
 	public Boolean MountFileSystem() {
 
-		Common.runCMD("busybox rmdir /sdcard/fuckcm_etc", "");
-		Common.runCMD("busybox mkdir /sdcard/fuckcm_etc", "");
-
-		// Common.testSleep(1000);
-		int ret = Common
-				.rootCMD("busybox mount /system/etc /sdcard/fuckcm_etc");
-		if (ret != 0) {
-			ret = Common
-					.rootCMD("busybox mount /system/etc /mnt/sdcard/fuckcm_etc");
-			if (ret != 0)
-				return false;
-		}
-
-		// Common.testSleep(1000);
-		ret = Common.rootCMD("busybox mount -o rw,remount /sdcard/fuckcm_etc");
-		if (ret != 0) {
-			ret = Common
-					.rootCMD("busybox mount -o rw,remount /mnt/sdcard/fuckcm_etc");
-			if (ret != 0)
-				return false;
-		}
-
-		return true;
-	}
-
-	public Boolean UnmountFileSystem() {
-
-		int ret = Common.rootCMD("busybox umount /sdcard/fuckcm_etc");
-		if (ret != 0) {
-			ret = Common.rootCMD("busybox umount /mnt/sdcard/fuckcm_etc");
-			if (ret != 0)
-				return false;
-		}
-
-		// ret = Common.rootCMD("rmdir /sdcard/fuckcm_etc");
-		ret = Common.runCMD("busybox rmdir /sdcard/fuckcm_etc", "");
-		if (ret != 0)
+		int ret = Common.rootCMD(Common.remountFileSystem);
+		if (ret == 0)
+			return true;
+		else
 			return false;
-
-		return true;
 	}
 
 	/**
 	 * 启动服务
 	 */
-	public Boolean fuckcmStartService() {
-
-		Boolean mountBoolean = false;
-		Boolean ipRulesBoolean = false;
-
+	public void fuckcmStartService() {
 		try {
 
 			// 挂载目录
-			mountBoolean = MountFileSystem();
+			MountFileSystem();
 
 			// 打开IPForwad选项
-			ipRulesBoolean = EnableIPForward();
-			if (!ipRulesBoolean) {
-				Exception myException = new Exception("Enable IP Forwad Error");
-				throw myException;
-			}
+			EnableIPForward();
 
 			// 如果套接字已存在，则关闭套接字
 			if (tunnelSocket != null)
@@ -256,37 +212,19 @@ public class fuckcmServices extends Service {
 
 			// 创建监听套接字
 			srvTunnelSocket = new ServerSocket(Common.SERVICE_PORT);
-
-			// 启动监听服务
 			tunnelSocket = new TunnelSocket(srvTunnelSocket);
 			tunnelSocket.start();
 
-			/*
-			 * DNS服务
-			 */
-			if (mountBoolean) {
-				srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
-
-				dnsService = new DNSService(srvDNSSocket);
-				dnsService.start();
-			} else {
-
-			}
+			// DNS服务
+			srvDNSSocket = new DatagramSocket(Common.SERVICE_DNSPORT);
+			dnsService = new DNSService(srvDNSSocket);
+			dnsService.start();
 
 			// 清除规则
-			ipRulesBoolean = CleanIPTablesRules();
-			if (!ipRulesBoolean) {
-				Exception myException = new Exception("Reset iptables Error");
-				throw myException;
-			}
+			CleanIPTablesRules();
 
 			// 设置规则
-			ipRulesBoolean = SetIPTablesRules();
-			if (!ipRulesBoolean) {
-				Exception myException = new Exception(
-						"Set iptables rules Error");
-				throw myException;
-			}
+			SetIPTablesRules();
 
 			Log.i(Common.TAG, "Service Started...");
 
@@ -296,16 +234,12 @@ public class fuckcmServices extends Service {
 					getString(R.string.START_SUCCESS));
 
 			isRuning = true;
-			ipRulesBoolean = true;
 
 		} catch (Exception e) {
 
 			Log.e(Common.TAG, "start service error", e);
 			PostUIMessage(e.getMessage());
 		}
-
-		return ipRulesBoolean;
-
 	}
 
 	public void fuckcmStopService() {
@@ -313,8 +247,6 @@ public class fuckcmServices extends Service {
 		Log.d(Common.TAG, "Service Stop entry");
 
 		try {
-
-			UnmountFileSystem();
 
 			// 关闭IP转向
 			CleanIPTablesRules(); // 清除规则
