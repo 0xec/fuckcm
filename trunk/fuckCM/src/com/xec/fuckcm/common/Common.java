@@ -7,8 +7,10 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.util.Log;
 
 public class Common {
@@ -170,11 +172,29 @@ public class Common {
 			apnName = "wifi";
 			return apnName;
 		}
+		
+		Log.i(TAG, "current network:" + networkInfo.getExtraInfo());
 
-		if (networkInfo.getExtraInfo().length() > 0) {
-
-			apnName = networkInfo.getExtraInfo();
-			return apnName;
+//		if (networkInfo.getExtraInfo().length() > 0) {
+//
+//			apnName = networkInfo.getExtraInfo();
+//			return apnName;
+//		}
+		
+		Cursor mCursor = context.getContentResolver().query(
+				Uri.parse("content://telephony/carriers"),
+				new String[] { "apn" }, "current=1", null, null);
+		if (mCursor != null) {
+			try {
+				if (mCursor.moveToFirst()) {
+					apnName = mCursor.getString(0);
+					return apnName;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Can not get Network info", e);
+			} finally {
+				mCursor.close();
+			}
 		}
 
 		return apnName;
