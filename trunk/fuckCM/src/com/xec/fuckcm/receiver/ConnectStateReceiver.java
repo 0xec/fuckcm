@@ -24,8 +24,11 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 		String apnNameString = Common.getAPNName(context);
 
 		Log.d(Common.TAG, "recv apn name:" + apnNameString);
+		
+		if (apnNameString.equals("none"))
+			return;
 
-		if (apnNameString.equals("cmwap") || apnNameString.equals("none")) {
+		if (apnNameString.equals("cmwap")) {
 
 			// Log.d(Common.TAG, "broadcast receiver start");
 			new RunThread(context, true).start();
