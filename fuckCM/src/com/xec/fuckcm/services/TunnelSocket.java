@@ -6,8 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
-//import java.util.Timer;
-//import java.util.TimerTask;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,7 +26,7 @@ public class TunnelSocket extends Thread {
 	// 线程池
 	private ExecutorService tunnelPool = Executors.newCachedThreadPool();
 	
-/*	Timer timer = new Timer();
+	Timer timer = new Timer();
 	TimerTask timerTask = new TimerTask() {
 		
 		@Override
@@ -37,7 +37,7 @@ public class TunnelSocket extends Thread {
 			connReq.clear();
 		}
 	};
-*/
+
 	/**
 	 * 构造函数
 	 */
@@ -46,7 +46,7 @@ public class TunnelSocket extends Thread {
 		this.srvTunnelSocket = srvSkt;
 		isRuning = true;
 
-	//	timer.schedule(timerTask, 10000, 10000);
+		timer.schedule(timerTask, 10000, 10000);
 	}
 
 	@Override
@@ -85,8 +85,7 @@ public class TunnelSocket extends Thread {
 					Log.d(Common.TAG, srcPort + "-------->" + dstHost);
 
 					//
-					tunnelPool
-							.execute(new ConnectSession(clientSocket, dstHost));
+					tunnelPool.execute(new ConnectSession(clientSocket, dstHost));
 				}
 
 			} catch (IOException e) {
