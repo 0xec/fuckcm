@@ -3,8 +3,10 @@ package com.xec.fuckcm;
 import com.xec.fuckcm.common.Common;
 import com.xec.fuckcm.services.fuckcmServices;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -12,11 +14,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View.OnClickListener;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class mainActivity extends Activity implements OnClickListener {
 
@@ -137,6 +147,104 @@ public class mainActivity extends Activity implements OnClickListener {
 			break;
 		}
 
+	}
+	
+	/**
+	 * 菜单消息
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.option_menu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case R.id.ReplaceHosts:
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        builder.setTitle(getString(R.string.REQUEST));
+	        builder.setMessage(getString(R.string.REPLACE_HOSTS));
+	        builder.setIcon(R.drawable.icon);
+	        builder.setPositiveButton(getString(R.string.OK), 
+	        		new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							
+							int ret = Common.rootCMD(Common.remountFileSystem);
+							if (ret == 0) {
+								
+								installFiles("/system/etc/hosts", R.raw.hosts, null);
+								PostUIMessage(getString(R.string.REPLACE_FINISH));
+							}
+							
+						}
+					});
+	        builder.setNegativeButton(getString(R.string.CANCEL), 
+	        		new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							
+							dialog.cancel();							
+						}
+					});
+	        
+	        builder.show();
+			return true;
+
+		}
+		return false;
+	}
+	
+	/**
+	 * 安装文件
+	 * @param 目标位置
+	 * @param 资源ID
+	 * @param 属性
+	 * @return
+	 */
+	private int installFiles(String dest, int resId, String mod) {
+
+		int result = -1;
+		BufferedInputStream bin = null;
+		FileOutputStream fo = null;
+		try {
+			bin = new BufferedInputStream(getResources().openRawResource(resId));
+
+			if (mod == null)
+				mod = "644";
+
+			File destF = new File(dest);
+
+			// 如果文件不存在，则随便touch一个先
+			if (!destF.exists())
+				Common.rootCMD("busybox touch " + dest);
+
+			Common.rootCMD("chmod 666 " + dest);
+
+			fo = new FileOutputStream(destF);
+			int length;
+			byte[] content = new byte[1024];
+
+			while ((length = bin.read(content)) > 0) {
+				fo.write(content, 0, length);
+			}
+
+			fo.close();
+			bin.close();
+			Common.rootCMD("chmod " + mod + "  " + dest);
+			result = 0;
+
+		} catch (IOException e) {
+			Log.e(Common.TAG, "Install File Error", e);
+		}
+		return result;
 	}
 
 	/**
