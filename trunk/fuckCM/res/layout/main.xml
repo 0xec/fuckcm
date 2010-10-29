@@ -2,7 +2,7 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:stretchColumns="1">
-
+	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextVersion" android:text="@string/VERSION" android:gravity="right"></TextView>
 	<TableRow android:layout_margin="2pt" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:gravity="center_vertical">
 		<ToggleButton android:layout_height="wrap_content"
@@ -18,8 +18,8 @@
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:inputType="none"
 				android:paddingRight="70sp" android:text="@string/TEXT_CONTENT" />
-		</TableLayout>
-	</TableRow>
+</TableLayout>
+</TableRow>
 
 	<View android:layout_height="2dip" android:background="#FF909090" />
 

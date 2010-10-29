@@ -25,8 +25,12 @@ public class ConnectStateReceiver extends BroadcastReceiver {
 
 		Log.d(Common.TAG, "recv apn name:" + apnNameString);
 		
-		if (apnNameString.equals("none"))
-			return;
+		
+		//
+		//	还是去掉这个，好像打电话会有影响
+		//
+		//if (apnNameString.equals("none"))
+		//	return;
 
 		if (apnNameString.equals("cmwap")) {
 
