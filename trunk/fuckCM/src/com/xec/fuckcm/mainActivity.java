@@ -166,10 +166,11 @@ public class mainActivity extends Activity implements OnClickListener {
 		switch (item.getItemId()) {
 		case R.id.ReplaceHosts:
 			
+			//	替换 hosts文件
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	        builder.setTitle(getString(R.string.REQUEST));
 	        builder.setMessage(getString(R.string.REPLACE_HOSTS));
-	        builder.setIcon(R.drawable.icon);
+	        builder.setIcon(R.drawable.software_update);
 	        builder.setPositiveButton(getString(R.string.OK), 
 	        		new DialogInterface.OnClickListener() {
 						
