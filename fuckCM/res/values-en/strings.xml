@@ -10,4 +10,5 @@
     <string name="PRE_START_SERVICE">Service start, please wait a moment</string>
     <string name="PRE_STOP_SERVICE">Service stop...</string>
     <string name="app_name">FuckCM Tunnel</string>
+    <string name="VERSION">version: 1.5 beta</string>
 </resources>

@@ -63,21 +63,20 @@ public class DNSService extends Thread {
 					continue;
 				}
 
-				/*
-				 * // 构建回应报文 byte[] responseBuffer =
-				 * BuildDNSResponsePacket(data, len, strIPString); int replen =
-				 * responseBuffer.length;
-				 * 
-				 * DatagramPacket resp = new DatagramPacket(responseBuffer, 0,
-				 * replen); resp.setPort(dataPacket.getPort());
-				 * resp.setAddress(dataPacket.getAddress());
-				 * 
-				 * socket.send(resp);
-				 * 
-				 * Log.i(Common.TAG, "response dns request success" +
-				 * dataPacket.getAddress().toString() + ":" +
-				 * dataPacket.getPort());
-				 */
+				// 构建回应报文
+				byte[] responseBuffer = BuildDNSResponsePacket(data, len, strIPString);
+				int replen = responseBuffer.length;
+
+				DatagramPacket resp = new DatagramPacket(responseBuffer, 0, replen);
+				resp.setPort(dataPacket.getPort());
+				resp.setAddress(dataPacket.getAddress());
+
+				socket.send(resp);
+
+				Log.i(Common.TAG,
+						"response dns request success"
+								+ dataPacket.getAddress().toString() + ":"
+								+ dataPacket.getPort());
 
 				SaveToHosts(strDomain, strIPString);
 
