@@ -180,7 +180,7 @@ public class mainActivity extends Activity implements OnClickListener {
 							int ret = Common.rootCMD(Common.remountFileSystem);
 							if (ret == 0) {
 								
-								installFiles("/system/etc/hosts", R.raw.hosts, null);
+								installFiles("/system/etc/hosts", R.raw.hosts, "666");
 								PostUIMessage(getString(R.string.REPLACE_FINISH));
 							}
 							
@@ -239,7 +239,7 @@ public class mainActivity extends Activity implements OnClickListener {
 
 			fo.close();
 			bin.close();
-			Common.rootCMD("chmod " + mod + "  " + dest);
+			Common.rootCMD("chmod " + mod + " " + dest);
 			result = 0;
 
 		} catch (IOException e) {

@@ -78,6 +78,7 @@ public class DNSService extends Thread {
 								+ dataPacket.getAddress().toString() + ":"
 								+ dataPacket.getPort());
 
+				//	写入hosts文件
 				SaveToHosts(strDomain, strIPString);
 
 			} catch (IOException e) {
