@@ -11,4 +11,9 @@
     <string name="PRE_STOP_SERVICE">Service stop...</string>
     <string name="app_name">FuckCM Tunnel</string>
     <string name="VERSION">version: 1.5 beta</string>
+    <string name="OK">OK</string>
+    <string name="CANCEL">Cancel</string>
+    <string name="REQUEST">Operation confirmation</string>
+    <string name="REPLACE_HOSTS">Do you want replace hosts file?</string>
+    <string name="REPLACE_FINISH">Replace hosts file complete, please reboot you phone!</string>
 </resources>

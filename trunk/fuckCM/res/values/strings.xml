@@ -11,4 +11,9 @@
     <string name="PRE_STOP_SERVICE">服务停止中...</string>
     <string name="app_name">FuckCM Tunnel</string>
     <string name="VERSION">version: 1.5 beta</string>
+    <string name="OK">确定</string>
+    <string name="CANCEL">取消</string>
+    <string name="REQUEST">操作确认</string>
+    <string name="REPLACE_HOSTS">您确定要替换hosts文件吗？</string>
+    <string name="REPLACE_FINISH">替换hosts文件完成，请重启您的手机以便生效!</string>
 </resources>
