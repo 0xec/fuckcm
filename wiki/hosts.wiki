@@ -1,3 +1,6 @@
+<div>
+<pre>
+
 127.0.0.1		    localhost
 
 #google 
@@ -30,3 +33,6 @@
 207.242.93.86           andrd.accu-weather.com
 65.49.92.58             sirocco.accuweather.com
 65.49.92.81             sirocco.accuweather.com
+
+</pre>
+</div>
