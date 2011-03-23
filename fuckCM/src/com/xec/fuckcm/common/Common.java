@@ -43,6 +43,7 @@ public class Common {
 	// IPtables命令
 	public static String enableIPForward = "echo 1 > /proc/sys/net/ipv4/ip_forward";
 	public static String disableIPForward = "echo 0 > /proc/sys/net/ipv4/ip_forward";
+
 	public static String ipTable_command[] = {
 			"iptables -t nat -A OUTPUT -o rmnet0 -p tcp --dport 80 --destination ! 10.0.0.0/8 -j DNAT --to-destination " + proxyHost + ":" + proxyPort,
 			"iptables -t nat -A OUTPUT -o rmnet0 -p udp --dport 53  -j DNAT --to-destination 127.0.0.1:"	+ SERVICE_DNSPORT,
@@ -60,6 +61,8 @@ public class Common {
 		ArrayList<String> strReader = new ArrayList<String>();
 		ArrayList<String> strError = new ArrayList<String>();
 		try {
+			
+			Log.d(TAG, "Root Command:" + cmd);
 
 			Process process = Runtime.getRuntime().exec("su");
 			OutputStreamWriter writer = new OutputStreamWriter(

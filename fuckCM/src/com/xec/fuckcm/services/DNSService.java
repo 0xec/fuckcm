@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -69,14 +70,14 @@ public class DNSService extends Thread {
 
 				DatagramPacket resp = new DatagramPacket(responseBuffer, 0, replen);
 				resp.setPort(dataPacket.getPort());
-				resp.setAddress(dataPacket.getAddress());
+				resp.setAddress(InetAddress.getLocalHost());
 
 				socket.send(resp);
 
 				Log.i(Common.TAG,
 						"response dns request success"
-								+ dataPacket.getAddress().toString() + ":"
-								+ dataPacket.getPort());
+								+ resp.getAddress().toString() + ":"
+								+ resp.getPort());
 
 				//	写入hosts文件
 				SaveToHosts(strDomain, strIPString);
