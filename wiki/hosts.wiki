@@ -1,38 +1,41 @@
 <div>
 <pre>
-
-127.0.0.1		    localhost
+127.0.0.1				localhost
 
 #google 
-209.85.237.25			smtp.google.com
-72.14.203.188			mtalk.google.com
-74.125.153.138			tools.google.com
-74.125.113.192          supl.google.com
-66.249.89.99			www.google.com
-74.125.53.101			android.clients.google.com
-72.14.213.100			mobilemaps.clients.google.com
-66.249.89.99			www.google.com.hk
-74.125.53.113			android.l.google.com
-74.125.53.113			clients2.google.com
-74.125.53.113			clients.l.google.com
-66.249.89.104			maps.google.com
-72.14.203.102			csi.google.com
-203.208.39.104			m.google.cn
-72.14.203.83            mail.google.com
-203.208.39.104			www.google.cn
-74.125.19.100			docs.google.com
-203.208.39.104			picasaweb.google.com
-72.14.203.133			mw2.google.com
+216.239.44.95			smtp.google.com
+74.125.153.188			mtalk.google.com
+74.125.95.139			tools.google.com
+74.125.127.192          supl.google.com
+209.85.135.99			www.google.com
+74.125.95.113			android.clients.google.com
+74.125.95.100			mobilemaps.clients.google.com
+209.85.135.103			www.google.com.hk
+74.125.95.139			android.l.google.com
+74.125.95.138			clients2.google.com
+74.125.95.100			clients.l.google.com
+209.85.175.104			maps.google.com
+203.208.37.104			m.google.cn
+209.85.175.18           mail.google.com
+203.208.37.104			www.google.cn
+209.85.175.101			docs.google.com
+209.85.175.93			picasaweb.google.com
+74.125.71.118			mw2.google.com
 
-#
+# GPS
 123.146.124.27          2.cn.pool.ntp.org
 131.107.13.100          time-nw.nist.gov
 
-#
+# HTC Weather
 98.142.110.140			htc.accuweather.com
 207.242.93.86           andrd.accu-weather.com
 65.49.92.58             sirocco.accuweather.com
 65.49.92.81             sirocco.accuweather.com
+
+# Auto
+59.151.122.68			mobi.zhangyue.com
+61.164.148.22			template.52photo.com
+119.161.212.143			www.umeng.com
 
 </pre>
 </div>
