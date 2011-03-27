@@ -10,7 +10,7 @@
     <string name="PRE_START_SERVICE">服务启动中，请等待一段时间。</string>
     <string name="PRE_STOP_SERVICE">服务停止中...</string>
     <string name="app_name">FuckCM Tunnel</string>
-    <string name="VERSION">version: 1.5 beta</string>
+    <string name="VERSION">version: 1.5 beta 2</string>
     <string name="OK">确定</string>
     <string name="CANCEL">取消</string>
     <string name="REQUEST">操作确认</string>
