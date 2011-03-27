@@ -3,21 +3,18 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:stretchColumns="1">
 	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TextVersion" android:text="@string/VERSION" android:gravity="right"></TextView>
-	<TableRow android:layout_margin="2pt" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:gravity="center_vertical">
+	<TableRow android:layout_width="wrap_content"
+		android:gravity="center_vertical" android:layout_height="wrap_content" android:layout_margin="2pt">
 		<ToggleButton android:layout_height="wrap_content"
 			android:layout_width="wrap_content" android:layout_marginRight="10px"
 			android:id="@+id/RunButton" android:textOff="@string/BTN_STOPING"
-			android:textOn="@string/BTN_RUNING" android:height="48px"
-			android:width="68px" />
+			android:textOn="@string/BTN_RUNING" android:width="80px" android:height="60px"/>
 		<TableLayout android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:layout_column="1">
+			android:layout_height="wrap_content" android:layout_column="1" android:layout_marginRight="20px">
 			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:textSize="18sp"
-				android:textStyle="bold" android:textColor="#FFF" android:text="@string/TEXT_TITLE" />
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:inputType="none"
-				android:paddingRight="70sp" android:text="@string/TEXT_CONTENT" />
+				android:layout_height="wrap_content"
+				android:textStyle="bold" android:textColor="#FFF" android:text="@string/TEXT_TITLE" android:width="40px"/>
+			<TextView android:inputType="none" android:id="@+id/textView1" android:text="@string/TEXT_CONTENT" android:width="40px"></TextView>
 </TableLayout>
 </TableRow>
 

@@ -4,6 +4,7 @@ import com.xec.fuckcm.common.Common;
 import com.xec.fuckcm.services.fuckcmServices;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;  
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,6 +34,7 @@ public class mainActivity extends Activity implements OnClickListener {
 	private ToggleButton runBtn = null; // 按钮
 	private TextView logWin = null; // 日志框
 	private ScrollView scrollView = null; // 滚动窗口
+	private ProgressDialog progressDialog = null;
 
 	private IntentFilter intentFilter = null;
 
@@ -62,16 +64,25 @@ public class mainActivity extends Activity implements OnClickListener {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-
+			
+			String strMsg = "";
 			try {
+				
+				strMsg = intent.getExtras().getString("msg");
 
 				Message msgMessage = mHandle.obtainMessage();
 				Bundle bundle = new Bundle();
 
-				bundle.putString("msg", intent.getExtras().getString("msg"));
+				bundle.putString("msg", strMsg);
 
 				msgMessage.setData(bundle);
 				mHandle.sendMessage(msgMessage);
+							
+				if (intent.getExtras().getInt("action") == 1) {
+					
+					if (progressDialog != null)
+						progressDialog.dismiss();
+				}
 
 			} catch (Exception e) {
 
@@ -118,28 +129,30 @@ public class mainActivity extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 
-		Intent intent0 = new Intent(this, fuckcmServices.class);
+		//Intent intent0 = new Intent(this, fuckcmServices.class);
 
 		switch (v.getId()) {
 		case R.id.RunButton:
 			if (runBtn.isChecked()) {
-
-				PostUIMessage(getString(R.string.PRE_START_SERVICE));
-
-				// 保存状态，当recv接收到消息时候确定是运行还是不做任何操作
-				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_RUNING);
-
-				// 控制服务的状态
-				intent0.putExtra("action", Common.SERVICE_RUNING);
-
-				startService(intent0);
+				
+				progressDialog = ProgressDialog.show(mainActivity.this, 
+						"Waiting...", 
+						getString(R.string.PRE_START_SERVICE), 
+						true,
+						true); 
+//
+//				// 控制服务的状态
+				new RunThread(this, true).start();
+ 
 			} else {
+				
+				progressDialog = ProgressDialog.show(mainActivity.this, 
+						"Waiting...", 
+						getString(R.string.PRE_STOP_SERVICE), 
+						true,
+						true);  
 
-				PostUIMessage(getString(R.string.PRE_STOP_SERVICE));
-				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
-
-				intent0.putExtra("action", Common.SERVICE_STOPPED);
-				startService(intent0);
+				new RunThread(this, false).start();
 			}
 			break;
 
@@ -257,12 +270,50 @@ public class mainActivity extends Activity implements OnClickListener {
 
 			Intent intent0 = new Intent(Common.actionString);
 			intent0.putExtra("msg", strMessage);
+			intent0.putExtra("action", 0);
 			sendBroadcast(intent0);
 			Toast.makeText(this, strMessage, Toast.LENGTH_LONG).show();
 
 		} catch (Exception e) {
 
 			Log.e(Common.TAG, "Post UI Message Error", e);
+		}
+	}
+	
+	class RunThread extends Thread {
+		public Context context = null;
+		public Boolean bRun = false;
+
+		public RunThread(Context ctx, Boolean bRun) {
+			this.context = ctx;
+			this.bRun = bRun;
+		}
+
+		@Override
+		public void run() {
+			Intent intent0 = new Intent(this.context, fuckcmServices.class);
+			
+			try 
+			{
+				sleep(5000);
+			} catch (InterruptedException e) {
+				
+			}
+			if (this.bRun) {
+				
+				PostUIMessage(getString(R.string.PRE_START_SERVICE));
+				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_RUNING);
+				
+				intent0.putExtra("action", Common.SERVICE_RUNING);
+				context.startService(intent0);
+			} else {
+				
+				PostUIMessage(getString(R.string.PRE_STOP_SERVICE));
+				preConfig.saveInt(Common.ServiceStatus, Common.SERVICE_STOPPED);
+
+				intent0.putExtra("action", Common.SERVICE_STOPPED);
+				context.startService(intent0);
+			}
 		}
 	}
 }

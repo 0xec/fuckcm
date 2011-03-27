@@ -1,276 +1,36 @@
-127.0.0.1		    localhost
-127.0.0.1           data.flurry.com
-64.73.32.135		north-america.pool.ntp.org
+127.0.0.1				localhost
 
 #google 
-209.85.237.25			smtp.google.com
-72.14.203.188			mtalk.google.com
-74.125.153.138			tools.google.com
-74.125.113.192          supl.google.com
-66.249.89.99			www.google.com
-74.125.53.101			android.clients.google.com
-72.14.213.100			mobilemaps.clients.google.com
-66.249.89.99			www.google.com.hk
-74.125.53.113			android.l.google.com
-74.125.53.113			clients2.google.com
-74.125.53.113			clients.l.google.com
-66.249.89.104			maps.google.com
-72.14.203.102			csi.gstatic.com			csi.google.com
-203.208.39.104			m.google.cn
-72.14.203.83            mail.google.com
-203.208.39.104			www.google.cn
-74.125.19.100			docs.google.com	writely.google.com	spreadsheets.google.com
-203.208.39.104			www.youtube.com youtube.com
-203.208.33.100			gdata.youtube.com
-203.208.39.99			upload.youtube.com insight.youtube.com
-203.208.39.160			help.youtube.com
-203.208.39.104			picasaweb.google.com
-72.14.203.133			mw2.google.com
-72.14.203.113			www.google-analytics.com
-#74.125.45.138			clients2.google.com
+216.239.44.95			smtp.google.com
+74.125.153.188			mtalk.google.com
+74.125.95.139			tools.google.com
+74.125.127.192          supl.google.com
+209.85.135.99			www.google.com
+74.125.95.113			android.clients.google.com
+74.125.95.100			mobilemaps.clients.google.com
+209.85.135.103			www.google.com.hk
+74.125.95.139			android.l.google.com
+74.125.95.138			clients2.google.com
+74.125.95.100			clients.l.google.com
+209.85.175.104			maps.google.com
+203.208.37.104			m.google.cn
+209.85.175.18           mail.google.com
+203.208.37.104			www.google.cn
+209.85.175.101			docs.google.com
+209.85.175.93			picasaweb.google.com
+74.125.71.118			mw2.google.com
 
-#place directory
-72.14.203.93			lh3.ggpht.com lh4.ggpht.com lh5.ggpht.com lh6.ggpht.com
-74.125.153.104			base.googlehosted.com
-64.233.183.118			mw2.google.com
+# GPS
+123.146.124.27          2.cn.pool.ntp.org
+131.107.13.100          time-nw.nist.gov
 
-88.198.9.5				ws.geonames.org
-203.77.189.29			static.rememberthemilk.com
-207.242.93.86			andrd.accu-weather.com
-32.60.13.205			htc.accuweather.com
-64.208.177.139			sirocco.accuweather.com
-74.125.153.95			ajax.googleapis.com
-72.9.41.2				lyrics.tunewiki.com
-67.228.135.189			api.rememberthemilk.com
-195.189.143.147         www.operamini.com
-64.255.180.253          server4.operamini.com	global-4-lvs-usa.opera-mini.net
-203.69.113.11           userserve-ak.last.fm
-69.26.187.42            images.amazon.com
-195.24.233.55           ws.audioscrobbler.com
-195.24.233.56           m.last.fm
-195.24.233.57           post.audioscrobbler.com
-195.24.233.58           post2.audioscrobbler.com
-195.24.233.59           userserve.last.fm
-195.24.233.60           play.last.fm
-195.24.233.61           static.last.fm
-195.24.233.62           bootstrap.last.fm
-195.24.233.63           stats.last.fm
-195.24.233.64           musiclookup.last.fm
-74.125.113.121          lianyun.ersiba.com
-216.226.131.181         www.rerware.com
-221.194.44.230          api.dict.cn
-38.118.85.51            direct.weatherbug.com
-38.118.85.55            config.mobile.wxbug.com		mapplets.weatherbug.com		tiles.weatherbug.com
-209.249.20.150          pub.weatherbug.com
-212.27.63.112			koxx3.free.fr
+# HTC Weather
+98.142.110.140			htc.accuweather.com
+207.242.93.86           andrd.accu-weather.com
+65.49.92.58             sirocco.accuweather.com
+65.49.92.81             sirocco.accuweather.com
 
-#Twitter
-67.220.213.23			www.twitter.com
-67.220.213.23			twitter.com
-67.220.213.23			assets0.twitter.com
-67.220.213.23			assets1.twitter.com
-67.220.213.23			static.twitter.com
-67.220.213.23			assets2.twitter.com
-67.220.213.23			assets3.twitter.com
-67.220.213.23			twitter.zendesk.com
-67.220.213.23			help.twitter.com
-80.83.114.92			api.twibble.de
-203.150.228.104			nest.onedd.net
-174.120.9.92			t.zhe.la
-216.137.55.35			a3.twimg.com
-216.137.55.37			a1.twimg.com
-173.45.239.93			service.twidroid.com
-
-        
-64.4.9.254              messenger.hotmail.com
-66.147.240.162          update.wordmate.net		dictdownload.wordmate.net wordmate.net
-64.225.159.221          m.moblyng.com
-221.130.45.201          nav.fetion.com.cn
-199.7.59.72             ocsp.thawte.com         OCSP.IAD3.verisign.com
-199.7.48.190            crl.thawte.com          crl.verisign.net
-124.172.110.19			www.domobile.com		www.hisz.net
-38.102.136.111			api.wunderground.com
-75.101.161.95			api.textonphone.com
-194.126.240.19			goog.shazamid.com
-87.230.22.28			phodroid.com
-174.36.58.233			twitpic.com
-209.17.74.13			twitgoo.com
-208.94.0.43				yfrog.com
-207.171.185.197			s3.amazonaws.com
-91.203.59.76			androidapp.wapedia.mobi
-
-#Facebook + Others
-124.40.42.105			www.facebook.com
-69.63.180.173			login.facebook.com
-69.192.34.110			s-static.ak.facebook.com
-69.63.176.69			secure-profile.facebook.com
-69.63.176.59			secure-media-sf2p.facebook.com
-69.63.178.13			ssl.facebook.com
-96.6.122.57				profile.ak.facebook.com
-64.211.21.152			b.static.ak.facebook.com
-203.208.39.160			s.ytimg.com
-74.54.212.166			www.tumblr.com
-74.54.212.166			iksky.tumblr.com
-
-#Notepad with Sync
-80.68.87.32				pad.helicoid.net
-
-#sugarsync
-74.201.86.21			www.sugarsync.com
-74.201.86.29			sugarproxy.sharpcast.com
-
-#unfamous player
-221.238.195.115			toutuogov.cn
-
-#movie Finder
-75.101.132.61			mvfeed.ikamobile.com
-
-#dizzler
-66.232.150.219			android.dizzler.com
-
-#sogou
-61.135.179.200			s.shouji.sogou.com
-
-#aldiko
-87.98.185.249			www.feedbooks.com	feedbooks.com
-
-#infzm
-211.147.247.182			www.infzm.com
-119.145.130.203			images.infzm.com
-
-#eoemarket
-74.207.242.64			www.eoemarket.com
-
-#thinking-space
-74.125.127.141			thinking-space.appspot.com
-	
-#youdao
-61.135.218.34			dict.youdao.com
-
-#SAM
-174.129.252.243			mobentoo.com			slideme.org
-75.101.165.41			stream.mobentoo.com		stream.slideme.org
-
-#dianping
-114.80.166.162			api.dianping.com		stat.api.dianping.com
-61.129.77.34			i3.dpfile.com		i1.dpfile.com	i2.dpfile.com	p.dpfile.com
-
-#CCAV
-202.108.16.165			diaodu.getview.cn
-
-#issuu                                                                          
-75.101.163.66			m.api.issuu.com	api.issuu.com                 
-207.171.185.197			content.issuu.com
-174.129.235.52			issuu.com                                     
-207.171.191.247			document.issuu.com
-
-#MY
-131.107.13.100			time-nw.nist.gov
-75.101.131.215			data.mobclix.com
-184.73.197.27			ads.mobclix.com
-124.40.42.47			r.admob.com
-66.114.50.13			levelup.accu-weather.com
-218.29.35.138			www.cnbeta.com
-61.4.177.19			feed.iplaysoft.com
-112.90.217.91			news.163.com
-220.250.64.26			dl.dropbox.com
-119.42.151.226			www.umeng.com
-60.217.241.11			sports.xinmin.cn
-60.217.232.246			www.chinanews.com.cn
-218.30.108.185			sports.sina.com.cn
-61.135.179.139			news.sohu.com
-60.217.241.98			news.xinhuanet.com
-89.212.19.147			0.europe.pool.ntp.org
-112.90.217.91			2010.163.com
-125.39.127.25			tech.qq.com
-58.68.146.208			it.people.com.cn
-202.108.33.82			tech.sina.com.cn
-59.37.4.8			nf.nfdaily.cn
-123.183.210.182			tech.ifeng.com
-123.183.210.167			finance.ifeng.com
-123.235.40.213			www.donews.com
-123.183.210.182			news.ifeng.com
-123.125.65.55			drmcmm.baidu.com
-123.125.115.126			hm.baidu.com
-123.125.65.27			cb.baidu.com
-74.125.153.82			china-addthis.googlecode.com
-123.125.46.151			static.connect.renren.com
-112.95.139.43			qzs.qq.com
-58.247.138.135			s.xnimg.cn
-60.217.232.231			home.donews.com
-222.35.79.152			addthis.org.cn
-60.217.241.88			blog.donews.com
-60.217.232.231			niu.donews.com
-119.75.213.51			www.baidu.com
-220.181.111.17			adm.baidu.com
-122.11.61.100			ade.wooboo.com.cn
-221.5.9.7			www.northnews.cn
-218.30.108.180			news.sina.com.cn
-58.68.146.208			culture.people.com.cn
-202.108.43.189			go.rss.sina.com.cn
-221.192.136.225			64973.dealer.it168.com
-222.138.229.236			news.xinmin.cn
-114.80.76.133			www.jfdaily.com
-59.52.28.132			jiangxi.jxnews.com.cn
-125.39.39.117			www.xinhuanet.com
-58.248.245.14			www.ynet.com
-210.51.180.138			fzwb.ynet.com
-74.125.153.100			id.google.com
-61.135.133.28			it.sohu.com
-117.104.138.33			www.zaobao.com
-219.239.88.191			smb.chinabyte.com
-60.28.14.160			games.qq.com
-218.8.55.132			sh.xinmin.cn
-202.108.33.77			games.sina.com.cn
-59.42.241.10			economy.southcn.com
-60.217.241.33			tech.163.com
-221.204.242.126			tech.xinmin.cn
-112.90.217.94			travel.163.com
-123.235.43.91			env.people.com.cn
-125.65.77.167			www.sinamy.com
-61.135.150.97			sports.sohu.com
-112.90.137.28			mbloghead.store.qq.com
-112.90.136.45			t0.qpic.cn
-61.135.129.207			www.stdaily.com
-202.108.119.193			www3.xinhuanet.com
-112.91.132.163			finance.qianlong.com
-218.5.113.99			news.qzgb.com
-202.10.69.90			content.caixun.com
-211.100.42.71			www.techweb.com.cn
-113.240.254.10			news.rednet.cn
-117.135.147.76			u.ttpod.com
-74.125.153.155			feedads.g.doubleclick.net
-119.42.227.250			img.tongji.linezing.com
-59.151.111.72			union.vancl.com
-61.4.177.24			www1.feedsky.com
-58.68.146.208			society.people.com.cn
-124.238.255.101			finance.ynet.com
-61.130.8.207			zjc.zjol.com.cn
-60.28.246.51			china.huanqiu.com
-60.28.246.53			society.huanqiu.com
-60.28.246.57			tech.huanqiu.com
-218.77.129.199			www.hinews.cn
-221.212.91.21			heilongjiang.dbw.cn
-112.90.217.91			game.163.com
-58.68.146.208			game.people.com.cn
-60.217.232.214			scitech.people.com.cn
-123.129.194.144			finance.qq.com
-123.146.124.29			2.cn.pool.ntp.org
-218.108.127.43			z.hangzhou.com.cn
-219.232.238.200			www.caijing.com.cn
-70.32.132.54			mm.admob.com
-67.214.210.43			api.openfeint.com
-112.90.136.45			t3.qpic.cn
-218.30.108.191			finance.sina.com.cn
-118.67.120.129			www.cnetnews.com.cn
-125.39.78.98			r3.mo.baidu.com
-122.11.61.101			www.wooboo.com.cn
-63.241.57.68			andchin.htc.com
-112.90.137.190			ptlogin2.qq.com
-112.90.138.226			picupload.t.qq.com
-58.22.103.199			panda.sj.91.com
-218.66.103.164			market.hiapk.com
-121.207.254.181			mobilelogin.sj.91.com
-58.251.149.164			android.qq.com
-58.251.58.209			web-proxy32.qq.com
-58.61.33.187			web-proxy25.qq.com
+# Auto
+59.151.122.68			mobi.zhangyue.com
+61.164.148.22			template.52photo.com
+119.161.212.143			www.umeng.com

@@ -70,7 +70,7 @@ public class fuckcmServices extends Service {
 
 		} catch (Exception e) {
 			Log.e(Common.TAG, "Create Tunnel Socket Exception", e);
-			PostUIMessage(e.getMessage());
+			PostUIMessage(e.getMessage(), 0);
 		}
 	}
 
@@ -126,12 +126,13 @@ public class fuckcmServices extends Service {
 	/**
 	 * 传递一个消息给UI
 	 */
-	public void PostUIMessage(String strMessage) {
+	public void PostUIMessage(String strMessage, int Action) {
 
 		try {
 
 			Intent intent0 = new Intent(Common.actionString);
 			intent0.putExtra("msg", strMessage);
+			intent0.putExtra("action", Action);
 			sendBroadcast(intent0);
 
 		} catch (Exception e) {
@@ -228,7 +229,7 @@ public class fuckcmServices extends Service {
 
 			Log.i(Common.TAG, "Service Started...");
 
-			PostUIMessage(getString(R.string.START_SUCCESS));
+			PostUIMessage(getString(R.string.START_SUCCESS), 1);
 			PostNotificationMessage(R.drawable.icon,
 					getString(R.string.app_name),
 					getString(R.string.START_SUCCESS));
@@ -238,7 +239,7 @@ public class fuckcmServices extends Service {
 		} catch (Exception e) {
 
 			Log.e(Common.TAG, "start service error", e);
-			PostUIMessage(e.getMessage());
+			PostUIMessage(e.getMessage(), 1);
 		}
 	}
 
@@ -271,7 +272,7 @@ public class fuckcmServices extends Service {
 		} finally {
 
 			Log.i(Common.TAG, "Service Stop Success");
-			PostUIMessage(getString(R.string.STOP_SUCCESS));
+			PostUIMessage(getString(R.string.STOP_SUCCESS), 1);
 			CleanNotificationMessage();
 
 			isRuning = false;
